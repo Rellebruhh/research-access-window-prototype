@@ -63,6 +63,10 @@
   --shadow-row: 0 2px 6px rgba(22, 27, 34, 0.08);
   --max-width: 1120px;
   --form-max-width: 760px;
+  --touch-target: 44px;
+  --clear-btn-size: 36px;
+  --icon-tile-size: 44px;
+  --checkbox-touch-size: 20px;
 
   /* Motion (<= 150ms) */
   --transition-fast: 120ms ease;

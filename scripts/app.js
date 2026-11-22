@@ -15,13 +15,36 @@
   var ICONS = {
     search:
       '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+    close:
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
     arrowLeft:
       '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>',
     check:
       '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+    uploadDoc:
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><polyline points="9 15 12 12 15 15"></polyline></svg>',
+    fileCheck:
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><polyline points="9 15 11 17 15 13"></polyline></svg>',
     imagePlaceholder:
       '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="8.5" cy="9.5" r="1.5"></circle><polyline points="21 15 16 10 5 20"></polyline></svg>'
   };
+
+  function isCoarsePointer() {
+    return Boolean(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+  }
+
+  function formatFileSize(bytes) {
+    if (typeof bytes !== 'number' || !isFinite(bytes) || bytes < 0) {
+      return '';
+    }
+    if (bytes < 1024) {
+      return bytes + ' B';
+    }
+    if (bytes < 1048576) {
+      return Math.max(1, Math.round(bytes / 1024)) + ' KB';
+    }
+    return (bytes / 1048576).toFixed(1) + ' MB';
+  }
 
   function escapeHtml(value) {
     return String(value)
@@ -204,9 +227,15 @@
       clearSearchBtn.addEventListener('click', function () {
         state.search = '';
         var input = document.getElementById('catalog-search');
+        var searchClearBtn = document.getElementById('search-clear-btn');
         if (input) {
           input.value = '';
-          input.focus();
+          if (!isCoarsePointer()) {
+            input.focus();
+          }
+        }
+        if (searchClearBtn) {
+          searchClearBtn.hidden = true;
         }
         updateCatalogResults();
       });
@@ -257,9 +286,14 @@
       '<span class="search-icon">' +
       ICONS.search +
       '</span>' +
-      '<input id="catalog-search" class="search-input" type="search" value="' +
+      '<input id="catalog-search" class="search-input" type="search" inputmode="search" enterkeyhint="search" value="' +
       escapeHtml(state.search) +
       '" placeholder="Search datasets, e.g. dengue, facilities, medicines" autocomplete="off">' +
+      '<button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="Clear search"' +
+      (state.search ? '' : ' hidden') +
+      '>' +
+      ICONS.close +
+      '</button>' +
       '</div>' +
       '</section>' +
       '<section class="filter-row" aria-label="Dataset filters">' +
@@ -313,9 +347,13 @@
       '</div>';
 
     var searchInput = document.getElementById('catalog-search');
+    var searchClearBtn = document.getElementById('search-clear-btn');
     if (searchInput) {
       searchInput.addEventListener('input', function (e) {
         state.search = e.target.value;
+        if (searchClearBtn) {
+          searchClearBtn.hidden = !state.search;
+        }
         updateCatalogResults();
       });
       searchInput.addEventListener('keydown', function (e) {
@@ -324,12 +362,30 @@
           if (state.search !== '') {
             state.search = '';
             searchInput.value = '';
+            if (searchClearBtn) {
+              searchClearBtn.hidden = true;
+            }
             updateCatalogResults();
             announce('Search cleared');
           }
         }
       });
-      searchInput.focus();
+      if (!isCoarsePointer()) {
+        searchInput.focus();
+      }
+    }
+
+    if (searchClearBtn && searchInput) {
+      searchClearBtn.addEventListener('click', function () {
+        state.search = '';
+        searchInput.value = '';
+        searchClearBtn.hidden = true;
+        updateCatalogResults();
+        announce('Search cleared');
+        if (!isCoarsePointer()) {
+          searchInput.focus();
+        }
+      });
     }
 
     var tierButtons = appEl.querySelectorAll('.seg-btn[data-tier]');
@@ -816,9 +872,31 @@
       '<div class="field-group">' +
       '<label class="field-label" for="req-ethics">Ethics clearance</label>' +
       '<p class="field-helper" id="helper-ethics">Approval letter from your research ethics board (PDF).</p>' +
-      '<div class="file-picker-wrap" id="ethics-picker-wrap">' +
-      '<input class="file-input" type="file" id="req-ethics" name="ethics" accept=".pdf,application/pdf" aria-describedby="helper-ethics err-ethics">' +
-      '<span id="ethics-filename" class="file-status">No file selected</span>' +
+      '<div class="file-dropzone" id="ethics-picker-wrap">' +
+      '<input class="sr-only" type="file" id="req-ethics" name="ethics" accept=".pdf,application/pdf" aria-describedby="helper-ethics err-ethics">' +
+      '<div class="file-dropzone-empty" id="ethics-empty">' +
+      '<div class="file-icon-tile">' +
+      ICONS.uploadDoc +
+      '</div>' +
+      '<div class="file-dropzone-copy">' +
+      '<div class="file-dropzone-title">Upload ethics clearance letter</div>' +
+      '<div class="file-dropzone-sub">PDF document from your research ethics board</div>' +
+      '</div>' +
+      '<button type="button" class="btn btn-secondary btn-small" id="ethics-choose-btn">Choose PDF</button>' +
+      '</div>' +
+      '<div class="file-dropzone-attached" id="ethics-attached" hidden>' +
+      '<div class="file-icon-tile file-icon-tile--attached">' +
+      ICONS.fileCheck +
+      '</div>' +
+      '<div class="file-dropzone-copy">' +
+      '<div class="file-dropzone-filename" id="ethics-filename"></div>' +
+      '<div class="file-dropzone-sub file-dropzone-sub--attached" id="ethics-meta"></div>' +
+      '</div>' +
+      '<div class="file-dropzone-actions">' +
+      '<button type="button" class="btn btn-secondary btn-small" id="ethics-change-btn">Change</button>' +
+      '<button type="button" class="btn-text-link" id="ethics-remove-btn">Remove</button>' +
+      '</div>' +
+      '</div>' +
       '</div>' +
       '<div id="err-ethics" class="field-error" hidden></div>' +
       '</div>' +
@@ -856,13 +934,35 @@
     var columnsFieldset = document.getElementById('req-columns-fieldset');
     var ethicsInput = document.getElementById('req-ethics');
     var ethicsWrap = document.getElementById('ethics-picker-wrap');
+    var ethicsEmptyEl = document.getElementById('ethics-empty');
+    var ethicsAttachedEl = document.getElementById('ethics-attached');
     var ethicsNameEl = document.getElementById('ethics-filename');
+    var ethicsMetaEl = document.getElementById('ethics-meta');
+    var ethicsChangeBtn = document.getElementById('ethics-change-btn');
+    var ethicsRemoveBtn = document.getElementById('ethics-remove-btn');
     var agreementBox = document.getElementById('agreement-box');
     var agreementInput = document.getElementById('req-agreement');
     var fillSampleBtn = document.getElementById('fill-sample-btn');
 
     var ethicsFileName = '';
+    var ethicsFileMeta = '';
     var hadError = Object.create(null);
+
+    function renderEthicsPickerState() {
+      if (ethicsFileName) {
+        ethicsEmptyEl.hidden = true;
+        ethicsAttachedEl.hidden = false;
+        ethicsWrap.classList.add('is-attached');
+        ethicsNameEl.textContent = ethicsFileName;
+        ethicsMetaEl.textContent = ethicsFileMeta || 'PDF attached';
+      } else {
+        ethicsEmptyEl.hidden = false;
+        ethicsAttachedEl.hidden = true;
+        ethicsWrap.classList.remove('is-attached');
+        ethicsNameEl.textContent = '';
+        ethicsMetaEl.textContent = '';
+      }
+    }
 
     function updatePurposeCount() {
       var len = purposeInput.value.length;
@@ -997,14 +1097,65 @@
       }
     });
 
+    ethicsEmptyEl.addEventListener('click', function () {
+      ethicsInput.click();
+    });
+
+    ethicsChangeBtn.addEventListener('click', function () {
+      ethicsInput.click();
+    });
+
+    ethicsRemoveBtn.addEventListener('click', function () {
+      ethicsFileName = '';
+      ethicsFileMeta = '';
+      ethicsInput.value = '';
+      renderEthicsPickerState();
+      validateEthics();
+      announce('Ethics clearance file removed');
+      ethicsInput.focus();
+    });
+
+    ethicsWrap.addEventListener('dragenter', function (e) {
+      e.preventDefault();
+      ethicsWrap.classList.add('is-dragover');
+    });
+
+    ethicsWrap.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      ethicsWrap.classList.add('is-dragover');
+    });
+
+    ethicsWrap.addEventListener('dragleave', function (e) {
+      if (!ethicsWrap.contains(e.relatedTarget)) {
+        ethicsWrap.classList.remove('is-dragover');
+      }
+    });
+
+    ethicsWrap.addEventListener('drop', function (e) {
+      e.preventDefault();
+      ethicsWrap.classList.remove('is-dragover');
+      var files = e.dataTransfer && e.dataTransfer.files;
+      if (files && files.length > 0) {
+        var dropped = files[0];
+        var sizeStr = formatFileSize(dropped.size);
+        ethicsFileName = dropped.name;
+        ethicsFileMeta = sizeStr ? sizeStr + ' · PDF attached' : 'PDF attached';
+        renderEthicsPickerState();
+        validateEthics();
+      }
+    });
+
     ethicsInput.addEventListener('change', function () {
       if (ethicsInput.files && ethicsInput.files.length > 0) {
-        ethicsFileName = ethicsInput.files[0].name;
-        ethicsNameEl.textContent = ethicsFileName;
+        var picked = ethicsInput.files[0];
+        var sizeStr = formatFileSize(picked.size);
+        ethicsFileName = picked.name;
+        ethicsFileMeta = sizeStr ? sizeStr + ' · PDF attached' : 'PDF attached';
       } else {
         ethicsFileName = '';
-        ethicsNameEl.textContent = 'No file selected';
+        ethicsFileMeta = '';
       }
+      renderEthicsPickerState();
       validateEthics();
     });
 
@@ -1035,7 +1186,8 @@
       }
 
       ethicsFileName = 'ethics_approval_sample.pdf';
-      ethicsNameEl.textContent = ethicsFileName;
+      ethicsFileMeta = 'Sample PDF · Ready for submission';
+      renderEthicsPickerState();
       agreementInput.checked = true;
 
       validateName();
@@ -1124,6 +1276,28 @@
     }
   }
 
+  function resetPrototype() {
+    state.search = '';
+    state.tier = 'all';
+    state.holder = 'all';
+    state.requestCounter = 42;
+    state.activeSubmission = null;
+
+    if (window.getSelection) {
+      var sel = window.getSelection();
+      if (sel && sel.removeAllRanges) {
+        sel.removeAllRanges();
+      }
+    }
+
+    if (window.location.hash !== '#/' && window.location.hash !== '') {
+      window.location.hash = '#/';
+    } else {
+      render();
+    }
+    announce('Prototype reset');
+  }
+
   function handleGlobalKeydown(e) {
     if (!e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) {
       return;
@@ -1141,18 +1315,7 @@
     }
 
     e.preventDefault();
-    state.search = '';
-    state.tier = 'all';
-    state.holder = 'all';
-    state.requestCounter = 42;
-    state.activeSubmission = null;
-
-    if (window.location.hash !== '#/' && window.location.hash !== '') {
-      window.location.hash = '#/';
-    } else {
-      render();
-    }
-    announce('Prototype reset');
+    resetPrototype();
   }
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -1161,6 +1324,31 @@
 
     window.addEventListener('hashchange', render);
     document.addEventListener('keydown', handleGlobalKeydown);
+
+    var conceptBar = document.querySelector('.concept-bar');
+    if (conceptBar) {
+      var lastTapAt = 0;
+      var lastResetAt = 0;
+
+      conceptBar.addEventListener('touchend', function (e) {
+        var now = Date.now();
+        if (now - lastTapAt <= 400) {
+          e.preventDefault();
+          lastTapAt = 0;
+          lastResetAt = now;
+          resetPrototype();
+        } else {
+          lastTapAt = now;
+        }
+      });
+
+      conceptBar.addEventListener('dblclick', function () {
+        if (Date.now() - lastResetAt < 600) {
+          return;
+        }
+        resetPrototype();
+      });
+    }
 
     render();
   });

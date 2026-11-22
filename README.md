@@ -21,5 +21,6 @@ An offline web prototype created for a 7-minute persuasive speech in Speech 30 (
 
 ## Presenter helpers
 
-- **`Shift + R`**: Resets search, filters, and any submitted request in memory and returns to `#/` (disabled while typing inside text fields on the request form).
-- **Fill sample request**: Fills all required fields on the access request form in one click during the live demo.
+- **`Shift + R`** (or **double-tap the top concept notice bar** on touch devices): Resets search, filters, and any submitted request in memory and returns to `#/` (keyboard shortcut disabled while typing inside text fields on the request form).
+- **Fill sample request**: Fills all required fields on the access request form in one tap or click during the live demo.
+- **Tablet and touch support**: Touch targets (`>= 44px`), stacked tablet portrait list rows, and non-intrusive search focus on coarse touch screens keep Android tablet screen recordings clean and smooth.
