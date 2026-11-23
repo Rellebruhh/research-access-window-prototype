@@ -5,13 +5,1508 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#F1F3F5">
   <title>Research Access Window</title>
-  <link rel="stylesheet" href="styles/tokens.css">
-  <link rel="stylesheet" href="styles/base.css">
-  <link rel="stylesheet" href="styles/components.css">
-  <script defer src="data/datasets.js"></script>
-  <script defer src="scripts/dates.js"></script>
-  <script defer src="scripts/data.js"></script>
-  <script defer src="scripts/app.js"></script>
+  <style>
+/* === styles/tokens.css === */
+:root {
+  /* Typography */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Type scale (18px root base): 14, 16, 18, 22, 28, 36 */
+  --text-14: 0.7778rem;
+  --text-16: 0.8889rem;
+  --text-18: 1rem;
+  --text-22: 1.2222rem;
+  --text-28: 1.5556rem;
+  --text-36: 2rem;
+
+  --lh-body: 1.5;
+  --lh-heading: 1.2;
+
+  /* Spacing scale (4px base): 4, 8, 12, 16, 24, 32, 48, 64 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Neutrals */
+  --color-bg: #F7F8FA;
+  --color-surface: #FFFFFF;
+  --color-surface-subtle: #F1F3F5;
+  --color-surface-hover: #F4F7F9;
+  --color-border: #D0D7DE;
+  --color-border-strong: #6E7781;
+  --color-text: #161B22;
+  --color-text-muted: #4B5563;
+  --color-on-accent: #FFFFFF;
+
+  /* Accent (deep slate-teal, non-agency) */
+  --color-accent: #0F4C5C;
+  --color-accent-hover: #0B3946;
+  --color-accent-soft: #E6F1F4;
+  --color-focus: #0F4C5C;
+
+  /* Tier colors (paired with text labels) */
+  --color-open-bg: #E6F4EA;
+  --color-open-border: #9CCBA8;
+  --color-open-text: #135D30;
+
+  --color-app-bg: #FEF3DC;
+  --color-app-border: #DFB566;
+  --color-app-text: #7C4700;
+
+  /* Validation / status */
+  --color-error-bg: #FDECEC;
+  --color-error-border: #D97777;
+  --color-error-text: #9B1C1C;
+
+  /* Radii, borders, elevation, layout */
+  --radius-control: 6px;
+  --radius-panel: 8px;
+  --border-width: 1px;
+  --focus-width: 2px;
+  --shadow-row: 0 2px 6px rgba(22, 27, 34, 0.08);
+  --max-width: 1120px;
+  --form-max-width: 760px;
+  --touch-target: 44px;
+  --clear-btn-size: 36px;
+  --icon-tile-size: 44px;
+  --checkbox-touch-size: 20px;
+
+  /* Motion (<= 150ms) */
+  --transition-fast: 120ms ease;
+}
+
+/* === styles/base.css === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 18px;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  overscroll-behavior-y: contain;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-18);
+  line-height: var(--lh-body);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  overscroll-behavior-y: contain;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: var(--lh-heading);
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+h1 {
+  font-size: var(--text-28);
+}
+
+h2 {
+  font-size: var(--text-22);
+}
+
+h3 {
+  font-size: var(--text-18);
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration-thickness: var(--border-width);
+  text-underline-offset: var(--space-1);
+}
+
+a:hover {
+  color: var(--color-accent-hover);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: var(--color-text);
+}
+
+button,
+a,
+input,
+select,
+textarea,
+label,
+tr[tabindex="0"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+table,
+.tabular,
+time {
+  font-variant-numeric: tabular-nums;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--space-1);
+}
+
+.sr-only {
+  position: absolute;
+  width: var(--border-width);
+  height: var(--border-width);
+  padding: 0;
+  margin: calc(-1 * var(--border-width));
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* === styles/components.css === */
+/* Persistent student concept notice bar */
+.concept-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: var(--color-surface-subtle);
+  border-bottom: var(--border-width) solid var(--color-border);
+  padding: var(--space-2) max(var(--space-6), env(safe-area-inset-right)) var(--space-2)
+    max(var(--space-6), env(safe-area-inset-left));
+}
+
+.concept-bar-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  font-size: var(--text-14);
+  line-height: var(--lh-body);
+  color: var(--color-text);
+}
+
+/* Main centered layout container */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-4) max(var(--space-6), env(safe-area-inset-right))
+    max(var(--space-8), env(safe-area-inset-bottom))
+    max(var(--space-6), env(safe-area-inset-left));
+}
+
+/* View transition */
+.view-shell {
+  transition: opacity var(--transition-fast);
+}
+
+/* Catalog header (compact so 5+ rows fit at 1280x720) */
+.site-header {
+  margin-bottom: var(--space-3);
+}
+
+.site-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+}
+
+.site-subtitle {
+  font-size: var(--text-16);
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.site-explanation {
+  margin-top: var(--space-1);
+  font-size: var(--text-16);
+  color: var(--color-text-muted);
+}
+
+/* Search bar */
+.search-section {
+  margin-bottom: var(--space-3);
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: var(--space-3);
+  color: var(--color-text-muted);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-12) var(--space-2) var(--space-12);
+  font-size: var(--text-18);
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  transition: border-color var(--transition-fast);
+}
+
+.search-input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.search-input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+.search-input:focus {
+  border-color: var(--color-accent);
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: var(--space-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--clear-btn-size);
+  height: var(--clear-btn-size);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  background-color: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.search-clear-btn[hidden] {
+  display: none;
+}
+
+.search-clear-btn:hover {
+  background-color: var(--color-surface-subtle);
+  color: var(--color-text);
+}
+
+.search-clear-btn:active {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+/* Filters row & tier legend */
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-2);
+}
+
+.filter-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.segmented-control {
+  display: inline-flex;
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  overflow: hidden;
+}
+
+.seg-btn {
+  appearance: none;
+  border: 0;
+  border-right: var(--border-width) solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-14);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.seg-btn:last-child {
+  border-right: 0;
+}
+
+.seg-btn:hover {
+  background-color: var(--color-surface-subtle);
+}
+
+.seg-btn:active {
+  background-color: var(--color-accent-soft);
+}
+
+.seg-btn[aria-pressed="true"] {
+  background-color: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.seg-btn[aria-pressed="true"]:active {
+  background-color: var(--color-accent-hover);
+}
+
+.holder-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-14);
+  color: var(--color-text-muted);
+}
+
+.select-control {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: var(--color-surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234B5563' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-2) center;
+  background-size: var(--space-4) var(--space-4);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  padding: var(--space-1) var(--space-8) var(--space-1) var(--space-3);
+  font-size: var(--text-14);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.result-count {
+  font-size: var(--text-14);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.tier-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-6);
+  margin-bottom: var(--space-3);
+  font-size: var(--text-14);
+  color: var(--color-text-muted);
+}
+
+.tier-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Badges */
+.tier-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-14);
+  font-weight: 600;
+  line-height: 1;
+  border-radius: var(--radius-control);
+  border: var(--border-width) solid transparent;
+  white-space: nowrap;
+}
+
+.tier-badge--open {
+  background-color: var(--color-open-bg);
+  border-color: var(--color-open-border);
+  color: var(--color-open-text);
+}
+
+.tier-badge--application {
+  background-color: var(--color-app-bg);
+  border-color: var(--color-app-border);
+  color: var(--color-app-text);
+}
+
+/* Catalog table */
+.table-panel {
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+}
+
+.catalog-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.catalog-table th {
+  text-align: left;
+  font-size: var(--text-14);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background-color: var(--color-surface-subtle);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.catalog-table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border);
+  vertical-align: middle;
+  font-size: var(--text-16);
+}
+
+.catalog-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.col-dataset {
+  width: 45%;
+}
+
+.col-holder {
+  width: 10%;
+}
+
+.col-updated {
+  width: 13%;
+}
+
+.col-format {
+  width: 18%;
+}
+
+.col-tier {
+  width: 14%;
+}
+
+.dataset-row {
+  cursor: pointer;
+  background-color: var(--color-surface);
+  transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.dataset-row:hover {
+  background-color: var(--color-surface-hover);
+  box-shadow: var(--shadow-row);
+}
+
+.dataset-row:active {
+  background-color: var(--color-accent-soft);
+}
+
+.dataset-row:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: calc(-1 * var(--focus-width));
+  background-color: var(--color-surface-hover);
+  box-shadow: var(--shadow-row);
+}
+
+.dataset-link {
+  display: block;
+  font-size: var(--text-16);
+  font-weight: 600;
+  color: var(--color-accent);
+  text-decoration: none;
+  line-height: var(--lh-heading);
+}
+
+.dataset-row:hover .dataset-link {
+  text-decoration: underline;
+}
+
+.dataset-desc {
+  margin-top: var(--space-1);
+  font-size: var(--text-14);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cell-meta {
+  font-size: var(--text-14);
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+/* Empty state */
+.empty-state {
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-panel);
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+}
+
+.empty-state-message {
+  font-size: var(--text-18);
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-16);
+  font-weight: 600;
+  border-radius: var(--radius-control);
+  border: var(--border-width) solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.btn-primary {
+  background-color: var(--color-accent);
+  color: var(--color-on-accent);
+  border-color: var(--color-accent);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+  color: var(--color-on-accent);
+}
+
+.btn-primary:active {
+  background-color: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+}
+
+.btn-secondary {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-surface-subtle);
+  color: var(--color-text);
+}
+
+.btn-secondary:active {
+  background-color: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.btn-small {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-14);
+}
+
+.btn-text-link {
+  background: none;
+  border: 0;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-14);
+  font-weight: 500;
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+  cursor: pointer;
+  border-radius: var(--radius-control);
+}
+
+.btn-text-link:hover {
+  color: var(--color-accent-hover);
+  background-color: var(--color-accent-soft);
+}
+
+.btn-text-link:active {
+  background-color: var(--color-accent-soft);
+}
+
+/* Back link */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-16);
+  font-weight: 500;
+  color: var(--color-accent);
+  text-decoration: none;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-control);
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.back-link:active {
+  background-color: var(--color-accent-soft);
+}
+
+/* Detail view */
+.detail-header {
+  margin-bottom: var(--space-6);
+}
+
+.detail-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.detail-title-row h1 {
+  font-size: var(--text-28);
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-4);
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-panel);
+  padding: var(--space-4);
+  margin: 0;
+}
+
+.meta-item dt {
+  font-size: var(--text-14);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.meta-item dd {
+  margin: 0;
+  font-size: var(--text-16);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.detail-section {
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-panel);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.detail-section h2 {
+  margin-bottom: var(--space-3);
+}
+
+.about-text {
+  font-size: var(--text-16);
+  color: var(--color-text);
+  max-width: 75ch;
+}
+
+/* Open tier download bar & preview */
+.open-action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-panel);
+  padding: var(--space-4) var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.license-text {
+  font-size: var(--text-16);
+  color: var(--color-text-muted);
+}
+
+.preview-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.preview-label {
+  font-size: var(--text-14);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-control);
+}
+
+.data-table th {
+  background-color: var(--color-surface-subtle);
+  font-size: var(--text-14);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border);
+  white-space: nowrap;
+}
+
+.data-table td {
+  font-size: var(--text-14);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border);
+  color: var(--color-text);
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.data-table th.is-numeric,
+.data-table td.is-numeric {
+  text-align: right;
+}
+
+.col-name-cell {
+  font-family: var(--font-mono);
+  font-size: var(--text-14);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Placeholder image strip for medicine-reference-images */
+.placeholder-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.placeholder-tile {
+  background-color: var(--color-surface-subtle);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-control);
+  padding: var(--space-4) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.placeholder-tile-title {
+  font-size: var(--text-14);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.placeholder-tile-caption {
+  font-size: var(--text-14);
+  color: var(--color-text-muted);
+}
+
+/* Application tier panel */
+.application-panel {
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-panel);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.application-panel h2 {
+  margin-bottom: var(--space-3);
+}
+
+.application-explanation {
+  font-size: var(--text-16);
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+  max-width: 72ch;
+}
+
+.commitment-box {
+  background-color: var(--color-accent-soft);
+  border: var(--border-width) solid var(--color-accent);
+  border-radius: var(--radius-control);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  font-size: var(--text-18);
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.requirements-title {
+  font-size: var(--text-16);
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+
+.checklist {
+  list-style: none;
+  margin: 0 0 var(--space-6);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-16);
+  color: var(--color-text);
+}
+
+.checklist-icon {
+  color: var(--color-accent);
+  flex-shrink: 0;
+  margin-top: var(--space-1);
+}
+
+/* Citation block */
+.cite-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  background-color: var(--color-surface-subtle);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-control);
+  padding: var(--space-3) var(--space-4);
+}
+
+.cite-text {
+  font-size: var(--text-14);
+  color: var(--color-text);
+  flex: 1 1 auto;
+}
+
+/* Request form */
+.form-container {
+  max-width: var(--form-max-width);
+  margin: 0 auto;
+}
+
+.request-header {
+  margin-bottom: var(--space-6);
+}
+
+.request-dataset-meta {
+  margin-top: var(--space-2);
+  font-size: var(--text-16);
+  color: var(--color-text-muted);
+}
+
+.request-panel {
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-panel);
+  padding: var(--space-6);
+}
+
+.field-group {
+  margin-bottom: var(--space-4);
+}
+
+.field-group:last-of-type {
+  margin-bottom: var(--space-6);
+}
+
+.field-label {
+  display: block;
+  font-size: var(--text-16);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-1);
+}
+
+.field-helper {
+  font-size: var(--text-14);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.field-input,
+.field-select,
+.field-textarea {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-16);
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+}
+
+.field-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: var(--space-8);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234B5563' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+  background-size: var(--space-4) var(--space-4);
+  cursor: pointer;
+}
+
+.field-textarea {
+  resize: vertical;
+  min-height: 112px;
+}
+
+.field-input[aria-invalid="true"],
+.field-select[aria-invalid="true"],
+.field-textarea[aria-invalid="true"] {
+  border-color: var(--color-error-text);
+  background-color: var(--color-error-bg);
+}
+
+.char-counter {
+  margin-top: var(--space-1);
+  font-size: var(--text-14);
+  color: var(--color-text-muted);
+  text-align: right;
+}
+
+.columns-fieldset {
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-control);
+  padding: var(--space-3) var(--space-4);
+  margin: 0;
+}
+
+.columns-fieldset[aria-invalid="true"] {
+  border-color: var(--color-error-text);
+  background-color: var(--color-error-bg);
+}
+
+.columns-fieldset legend {
+  font-size: var(--text-16);
+  font-weight: 600;
+  padding: 0 var(--space-1);
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2) var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-control);
+  font-size: var(--text-14);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.checkbox-label:hover {
+  background-color: var(--color-surface-subtle);
+}
+
+.checkbox-label:active {
+  background-color: var(--color-accent-soft);
+}
+
+.checkbox-label input[type="checkbox"] {
+  margin-top: var(--space-1);
+  flex-shrink: 0;
+  accent-color: var(--color-accent);
+}
+
+/* Custom ethics clearance file dropzone */
+.file-dropzone {
+  position: relative;
+  border: var(--border-width) dashed var(--color-border-strong);
+  border-radius: var(--radius-panel);
+  background-color: var(--color-surface-subtle);
+  padding: var(--space-4);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.file-dropzone-empty {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+}
+
+.file-dropzone-attached {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.file-dropzone-empty[hidden],
+.file-dropzone-attached[hidden] {
+  display: none;
+}
+
+.file-dropzone:hover:not(.is-attached) {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent-soft);
+}
+
+.file-dropzone:active:not(.is-attached) {
+  background-color: var(--color-accent-soft);
+}
+
+.file-dropzone.is-dragover {
+  border-style: solid;
+  border-color: var(--color-accent);
+  background-color: var(--color-accent-soft);
+}
+
+.file-dropzone.is-attached {
+  border-style: solid;
+  border-color: var(--color-open-border);
+  background-color: var(--color-surface);
+}
+
+.file-dropzone[data-invalid="true"] {
+  border-style: solid;
+  border-color: var(--color-error-text);
+  background-color: var(--color-error-bg);
+}
+
+.file-dropzone:focus-within {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--space-1);
+}
+
+.file-icon-tile {
+  width: var(--icon-tile-size);
+  height: var(--icon-tile-size);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-control);
+  border: var(--border-width) solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-accent);
+}
+
+.file-icon-tile--attached {
+  background-color: var(--color-open-bg);
+  border-color: var(--color-open-border);
+  color: var(--color-open-text);
+}
+
+.file-dropzone-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.file-dropzone-title {
+  font-size: var(--text-16);
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: var(--lh-heading);
+}
+
+.file-dropzone-filename {
+  font-family: var(--font-mono);
+  font-size: var(--text-14);
+  font-weight: 600;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-dropzone-sub {
+  margin-top: var(--space-1);
+  font-size: var(--text-14);
+  color: var(--color-text-muted);
+}
+
+.file-dropzone-sub--attached {
+  color: var(--color-open-text);
+  font-weight: 500;
+}
+
+.file-dropzone-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.agreement-box {
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-surface-subtle);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-control);
+}
+
+.agreement-box .checkbox-label {
+  padding: var(--space-2);
+}
+
+.agreement-box[data-invalid="true"] {
+  border-color: var(--color-error-text);
+  background-color: var(--color-error-bg);
+}
+
+.agreement-text {
+  font-size: var(--text-16);
+  line-height: var(--lh-body);
+}
+
+.field-error {
+  margin-top: var(--space-1);
+  font-size: var(--text-14);
+  font-weight: 600;
+  color: var(--color-error-text);
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.form-actions-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Confirmation panel & status tracker */
+.confirmation-panel {
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-panel);
+  padding: var(--space-6);
+}
+
+.confirmation-ref-label {
+  font-size: var(--text-14);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.confirmation-ref {
+  font-family: var(--font-mono);
+  font-size: var(--text-22);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+}
+
+.confirmation-decision {
+  background-color: var(--color-accent-soft);
+  border: var(--border-width) solid var(--color-accent);
+  border-radius: var(--radius-control);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-18);
+  font-weight: 700;
+  color: var(--color-accent);
+  margin-bottom: var(--space-6);
+}
+
+.status-tracker {
+  list-style: none;
+  margin: 0 0 var(--space-6);
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.tracker-step {
+  position: relative;
+  padding-top: var(--space-4);
+  border-top: var(--space-1) solid var(--color-border);
+}
+
+.tracker-step--done,
+.tracker-step--current {
+  border-top-color: var(--color-accent);
+}
+
+.tracker-step-title {
+  font-size: var(--text-16);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.tracker-step-meta {
+  margin-top: var(--space-1);
+  font-size: var(--text-14);
+  color: var(--color-text-muted);
+}
+
+.tracker-step--current .tracker-step-meta {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.confirmation-note {
+  font-size: var(--text-16);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-6);
+}
+
+.confirmation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1140px) {
+  .col-dataset {
+    width: 42%;
+  }
+
+  .col-holder {
+    width: 10%;
+  }
+
+  .col-updated {
+    width: 14%;
+  }
+
+  .col-format {
+    width: 19%;
+  }
+
+  .col-tier {
+    width: 15%;
+  }
+}
+
+@media (max-width: 960px) {
+  .concept-bar {
+    padding: var(--space-2) max(var(--space-4), env(safe-area-inset-right)) var(--space-2)
+      max(var(--space-4), env(safe-area-inset-left));
+  }
+
+  .container {
+    padding: var(--space-4) max(var(--space-4), env(safe-area-inset-right))
+      max(var(--space-6), env(safe-area-inset-bottom))
+      max(var(--space-4), env(safe-area-inset-left));
+  }
+
+  .meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .placeholder-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .catalog-table,
+  .catalog-table thead,
+  .catalog-table tbody,
+  .catalog-table th,
+  .catalog-table td,
+  .catalog-table tr {
+    display: block;
+    width: auto;
+  }
+
+  .catalog-table thead {
+    position: absolute;
+    width: var(--border-width);
+    height: var(--border-width);
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+
+  .catalog-table tr.dataset-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    padding: var(--space-4);
+    border-bottom: var(--border-width) solid var(--color-border);
+  }
+
+  .catalog-table tr.dataset-row:last-child {
+    border-bottom: 0;
+  }
+
+  .catalog-table td {
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  .catalog-table td.col-dataset {
+    flex: 1 0 100%;
+    width: 100%;
+  }
+
+  .catalog-table td.col-holder,
+  .catalog-table td.col-updated,
+  .catalog-table td.col-format {
+    color: var(--color-text-muted);
+  }
+
+  .catalog-table td.col-tier {
+    margin-left: auto;
+  }
+
+  .dataset-desc {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 640px) {
+  .detail-section,
+  .application-panel,
+  .request-panel,
+  .confirmation-panel {
+    padding: var(--space-4);
+  }
+
+  .open-action-bar {
+    padding: var(--space-4);
+  }
+
+  .checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .file-dropzone-empty,
+  .file-dropzone-attached {
+    flex-wrap: wrap;
+  }
+
+  .file-dropzone-copy {
+    flex: 1 1 65%;
+  }
+
+  .file-dropzone-actions {
+    width: 100%;
+    padding-left: calc(var(--icon-tile-size) + var(--space-3));
+  }
+
+  .status-tracker {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .tracker-step {
+    border-top: 0;
+    border-left: var(--space-1) solid var(--color-border);
+    padding-top: 0;
+    padding-left: var(--space-4);
+  }
+
+  .tracker-step--done,
+  .tracker-step--current {
+    border-left-color: var(--color-accent);
+  }
+}
+
+@media (max-width: 520px) {
+  .meta-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (pointer: coarse), (max-width: 1024px) {
+  .search-input {
+    min-height: var(--touch-target);
+  }
+
+  .search-clear-btn {
+    width: var(--touch-target);
+    height: var(--touch-target);
+    right: 0;
+  }
+
+  .seg-btn,
+  .select-control,
+  .btn,
+  .btn-small,
+  .back-link,
+  .btn-text-link,
+  .field-input,
+  .field-select {
+    min-height: var(--touch-target);
+  }
+
+  .back-link,
+  .btn-text-link {
+    display: inline-flex;
+    align-items: center;
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+  }
+
+  .checkbox-label {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    width: var(--checkbox-touch-size);
+    height: var(--checkbox-touch-size);
+    margin-top: 0;
+  }
+}
+  </style>
 </head>
 <body>
   <aside class="concept-bar" aria-label="Concept disclaimer">
@@ -22,5 +1517,1993 @@
 
   <main id="app" class="container" tabindex="-1"></main>
   <div id="sr-status" class="sr-only" aria-live="polite"></div>
+
+  <script>
+/* === data/datasets.js === */
+(function (RAW) {
+  'use strict';
+
+  RAW.DATASETS = [
+    {
+      id: 'dengue-cases-city',
+      title: 'Dengue cases by city, monthly',
+      tier: 'open',
+      held_by: 'DOH',
+      format: 'CSV',
+      last_updated: '14 Oct 2026',
+      update_frequency: 'Monthly',
+      coverage: '2023-2025, 20 selected cities',
+      short_description: 'Monthly sample counts of reported dengue cases across 20 cities.',
+      description:
+        'Aggregated monthly counts of reported dengue cases grouped by city and administrative region from 2023 to 2025. Contains synthetic aggregate figures only, with no individual patient details or clinic identifiers. Useful for seasonal trend analysis and public health teaching exercises.',
+      keywords: ['dengue', 'surveillance', 'epidemiology', 'cities', 'monthly', 'vector'],
+      citation:
+        'Research Access Window (student concept). (2026). Dengue cases by city, monthly [Sample dataset].',
+      columns: [
+        { name: 'city', type: 'text', description: 'City or municipality name', numeric: false },
+        { name: 'region', type: 'text', description: 'Administrative region code', numeric: false },
+        { name: 'year', type: 'integer', description: 'Calendar year (2023 to 2025)', numeric: true },
+        { name: 'month', type: 'integer', description: 'Calendar month (1 to 12)', numeric: true },
+        { name: 'cases', type: 'integer', description: 'Sample reported dengue case count', numeric: true }
+      ]
+    },
+    {
+      id: 'pediatric-echo',
+      title: 'Pediatric echocardiography measurements, de-identified',
+      tier: 'application',
+      held_by: 'DOH',
+      format: 'CSV',
+      last_updated: '28 Sep 2026',
+      update_frequency: 'Quarterly',
+      coverage: '2021-2025, national referral centers',
+      short_description: 'De-identified pediatric heart defect scans and follow-up outcomes.',
+      description:
+        'De-identified clinical echocardiography measurements for pediatric patients evaluated for congenital heart defects. Includes defect dimensions, hemodynamic ratios, interventions, and follow-up duration across participating centers. Requires ethics clearance and a data sharing agreement because rare measurement profiles may risk re-identification.',
+      keywords: ['pediatric', 'echocardiography', 'cardiology', 'congenital', 'heart', 'clinical'],
+      citation:
+        'Research Access Window (student concept). (2026). Pediatric echocardiography measurements, de-identified [Sample dataset].',
+      columns: [
+        { name: 'record_id', type: 'text', description: 'Random study record identifier', numeric: false },
+        { name: 'age_months', type: 'integer', description: 'Patient age at scan in months', numeric: true },
+        { name: 'sex', type: 'text', description: 'Recorded biological sex (F or M)', numeric: false },
+        { name: 'region', type: 'text', description: 'Patient region of residence', numeric: false },
+        { name: 'defect_type', type: 'text', description: 'Primary structural defect classification', numeric: false },
+        { name: 'defect_diameter_mm', type: 'number', description: 'Measured defect diameter in millimeters', numeric: true },
+        { name: 'aortic_annulus_mm', type: 'number', description: 'Measured aortic annulus diameter in millimeters', numeric: true },
+        { name: 'qp_qs_ratio', type: 'number', description: 'Pulmonary-to-systemic blood flow ratio', numeric: true },
+        { name: 'peak_gradient_mmHg', type: 'number', description: 'Peak Doppler pressure gradient in mmHg', numeric: true },
+        { name: 'intervention', type: 'text', description: 'Intervention category performed', numeric: false },
+        { name: 'follow_up_months', type: 'integer', description: 'Months of documented follow-up', numeric: true }
+      ]
+    },
+    {
+      id: 'health-facilities',
+      title: 'Licensed health facilities registry',
+      tier: 'open',
+      held_by: 'DOH',
+      format: 'CSV',
+      last_updated: '02 Nov 2026',
+      update_frequency: 'Quarterly',
+      coverage: '2026 snapshot, nationwide',
+      short_description: 'Public directory of licensed facility types, service levels, and beds.',
+      description:
+        'Registry of licensed health facilities categorized by facility type, service capability level, city, region, and authorized bed capacity. All facility names in this prototype are synthetic generic names created for demonstration. Designed for geographic access mapping and capacity planning.',
+      keywords: ['facilities', 'hospitals', 'clinics', 'licensing', 'registry', 'beds'],
+      citation:
+        'Research Access Window (student concept). (2026). Licensed health facilities registry [Sample dataset].',
+      columns: [
+        { name: 'facility_name', type: 'text', description: 'Generic synthetic facility name', numeric: false },
+        { name: 'type', type: 'text', description: 'Facility classification (Hospital, Infirmary, Clinic)', numeric: false },
+        { name: 'level', type: 'text', description: 'Service capability level', numeric: false },
+        { name: 'city', type: 'text', description: 'City or municipality location', numeric: false },
+        { name: 'region', type: 'text', description: 'Administrative region code', numeric: false },
+        { name: 'bed_capacity', type: 'integer', description: 'Authorized bed capacity count', numeric: true }
+      ]
+    },
+    {
+      id: 'philhealth-claims',
+      title: 'Inpatient claims, de-identified',
+      tier: 'application',
+      held_by: 'PhilHealth',
+      format: 'CSV',
+      last_updated: '19 Oct 2026',
+      update_frequency: 'Semi-annual',
+      coverage: '2022-2025, nationwide',
+      short_description: 'De-identified inpatient claims with diagnoses and length of stay.',
+      description:
+        'De-identified inpatient reimbursement claim records containing age group, sex, region, primary ICD-10 diagnosis, length of stay, facility level, and claimed amount. Supports health economics, case-rate evaluation, and utilization studies. Access is gated because detailed claim combinations can enable re-identification.',
+      keywords: ['philhealth', 'claims', 'inpatient', 'insurance', 'icd10', 'expenditure'],
+      citation:
+        'Research Access Window (student concept). (2026). Inpatient claims, de-identified [Sample dataset].',
+      columns: [
+        { name: 'claim_id', type: 'text', description: 'Random synthetic claim identifier', numeric: false },
+        { name: 'age_group', type: 'text', description: 'Five-year patient age bracket', numeric: false },
+        { name: 'sex', type: 'text', description: 'Recorded biological sex (F or M)', numeric: false },
+        { name: 'region', type: 'text', description: 'Facility administrative region', numeric: false },
+        { name: 'primary_diagnosis_icd10', type: 'text', description: 'Primary ICD-10 diagnosis code', numeric: false },
+        { name: 'length_of_stay_days', type: 'integer', description: 'Inpatient stay duration in days', numeric: true },
+        { name: 'facility_level', type: 'text', description: 'Accredited hospital level', numeric: false },
+        { name: 'amount_claimed_php', type: 'number', description: 'Benefit amount claimed in Philippine pesos', numeric: true }
+      ]
+    },
+    {
+      id: 'medicine-reference-images',
+      title: 'Reference images of verified medicine packaging',
+      tier: 'open',
+      held_by: 'FDA',
+      format: 'CSV manifest + images',
+      last_updated: '06 Nov 2026',
+      update_frequency: 'Monthly',
+      coverage: '2025-2026, essential generic medicines',
+      hasPlaceholderImages: true,
+      short_description: 'Manifest and standard views of verified generic medicine packaging.',
+      description:
+        'Structured manifest indexing standardized reference photographs of verified generic medicine packaging across front, back, and blister pack views. Intended for inspection training and automated verification research using generic formulations only. No real commercial product photographs or brand names are included in this concept sample.',
+      keywords: ['medicine', 'packaging', 'images', 'verification', 'fda', 'generic', 'blister'],
+      citation:
+        'Research Access Window (student concept). (2026). Reference images of verified medicine packaging [Sample dataset].',
+      columns: [
+        { name: 'image_file', type: 'text', description: 'Standardized manifest image filename', numeric: false },
+        { name: 'generic_name', type: 'text', description: 'Generic active ingredient name', numeric: false },
+        { name: 'dosage_form', type: 'text', description: 'Formulation (Tablet, Capsule, Syrup, Suspension)', numeric: false },
+        { name: 'view', type: 'text', description: 'Packaging angle (front, back, or blister)', numeric: false },
+        { name: 'resolution', type: 'text', description: 'Pixel dimensions of the reference image', numeric: false }
+      ]
+    },
+    {
+      id: 'registered-drugs',
+      title: 'Registered drug products',
+      tier: 'open',
+      held_by: 'FDA',
+      format: 'CSV',
+      last_updated: '30 Oct 2026',
+      update_frequency: 'Monthly',
+      coverage: '2026 active and renewal sample list',
+      short_description: 'Generic drug formulations, dosage strengths, and registration status.',
+      description:
+        'Sample catalog of registered drug formulations listing generic names, dosage forms, strengths, and regulatory registration statuses. Brand names are omitted so the prototype demonstrates standardized generic product indexing. Suitable for formulary cross-checks and availability studies.',
+      keywords: ['drugs', 'pharmacy', 'generic', 'registration', 'formulary', 'fda'],
+      citation:
+        'Research Access Window (student concept). (2026). Registered drug products [Sample dataset].',
+      columns: [
+        { name: 'generic_name', type: 'text', description: 'Generic active pharmaceutical ingredient', numeric: false },
+        { name: 'dosage_form', type: 'text', description: 'Formulation type', numeric: false },
+        { name: 'strength', type: 'text', description: 'Labeled active strength per unit', numeric: false },
+        { name: 'registration_status', type: 'text', description: 'Sample regulatory status', numeric: false }
+      ]
+    },
+    {
+      id: 'counterfeit-advisories',
+      title: 'Counterfeit medicine advisories',
+      tier: 'open',
+      held_by: 'FDA',
+      format: 'CSV',
+      last_updated: '11 Nov 2026',
+      update_frequency: 'Weekly',
+      coverage: '2024-2026, nationwide public alerts',
+      short_description: 'Public safety alerts flagging counterfeit generic medicine batches.',
+      description:
+        'Structured log of sample public warnings covering suspected counterfeit medicines by generic name, dosage form, issue date, and visual inspection cues. Helps pharmacies, clinics, and researchers track recurring packaging anomalies without exposing brand trademarks.',
+      keywords: ['counterfeit', 'medicine', 'advisories', 'safety', 'alerts', 'fda'],
+      citation:
+        'Research Access Window (student concept). (2026). Counterfeit medicine advisories [Sample dataset].',
+      columns: [
+        { name: 'advisory_no', type: 'text', description: 'Sample public advisory reference code', numeric: false },
+        { name: 'generic_name', type: 'text', description: 'Generic medicine name cited in alert', numeric: false },
+        { name: 'dosage_form', type: 'text', description: 'Formulation type', numeric: false },
+        { name: 'date_issued', type: 'text', description: 'ISO date advisory was issued', numeric: false },
+        { name: 'distinguishing_features', type: 'text', description: 'Observed visual or print anomaly', numeric: false }
+      ]
+    },
+    {
+      id: 'hospital-beds-region',
+      title: 'Hospital bed capacity by region',
+      tier: 'open',
+      held_by: 'DOH',
+      format: 'CSV',
+      last_updated: '09 Sep 2026',
+      update_frequency: 'Annual',
+      coverage: '2022-2025, all 17 regions',
+      short_description: 'Annual regional totals of government and private hospital beds.',
+      description:
+        'Regional annual summary comparing total authorized government hospital beds and private hospital beds across all 17 administrative regions from 2022 to 2025. Contains synthetic aggregate regional counts only.',
+      keywords: ['hospitals', 'beds', 'capacity', 'region', 'government', 'private'],
+      citation:
+        'Research Access Window (student concept). (2026). Hospital bed capacity by region [Sample dataset].',
+      columns: [
+        { name: 'region', type: 'text', description: 'Administrative region name', numeric: false },
+        { name: 'year', type: 'integer', description: 'Reporting calendar year', numeric: true },
+        { name: 'government_beds', type: 'integer', description: 'Sample government hospital bed count', numeric: true },
+        { name: 'private_beds', type: 'integer', description: 'Sample private hospital bed count', numeric: true }
+      ]
+    },
+    {
+      id: 'discharge-records',
+      title: 'Hospital discharge summaries, de-identified',
+      tier: 'application',
+      held_by: 'DOH',
+      format: 'CSV',
+      last_updated: '22 Oct 2026',
+      update_frequency: 'Quarterly',
+      coverage: '2022-2025, sentinel hospitals',
+      short_description: 'De-identified inpatient diagnoses, procedures, and outcomes.',
+      description:
+        'De-identified hospital discharge records capturing age group, sex, region, primary ICD-10 diagnosis, procedure code, discharge outcome, and length of stay. Supports clinical outcomes and readmission research. Requires ethics review and a signed data sharing agreement.',
+      keywords: ['discharge', 'hospital', 'inpatient', 'outcomes', 'icd10', 'procedures'],
+      citation:
+        'Research Access Window (student concept). (2026). Hospital discharge summaries, de-identified [Sample dataset].',
+      columns: [
+        { name: 'record_id', type: 'text', description: 'Random synthetic discharge record ID', numeric: false },
+        { name: 'age_group', type: 'text', description: 'Patient age group bracket', numeric: false },
+        { name: 'sex', type: 'text', description: 'Recorded biological sex (F or M)', numeric: false },
+        { name: 'region', type: 'text', description: 'Hospital administrative region', numeric: false },
+        { name: 'diagnosis_icd10', type: 'text', description: 'Primary ICD-10 diagnosis code', numeric: false },
+        { name: 'procedure_code', type: 'text', description: 'Primary inpatient procedure code', numeric: false },
+        { name: 'outcome', type: 'text', description: 'Discharge disposition category', numeric: false },
+        { name: 'length_of_stay_days', type: 'integer', description: 'Total inpatient stay in days', numeric: true }
+      ]
+    }
+  ];
+
+  RAW.getDatasetById = function (id) {
+    return RAW.DATASETS.find(function (ds) {
+      return ds.id === id;
+    }) || null;
+  };
+})(window.RAW = window.RAW || {});
+
+/* === scripts/dates.js === */
+(function (RAW) {
+  'use strict';
+
+  var WEEKDAYS = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday'
+  ];
+
+  var MONTHS = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
+
+  function addWorkingDays(startDate, workingDays) {
+    var cursor = new Date(
+      startDate.getFullYear(),
+      startDate.getMonth(),
+      startDate.getDate()
+    );
+    var remaining = workingDays;
+
+    while (remaining > 0) {
+      cursor.setDate(cursor.getDate() + 1);
+      var day = cursor.getDay();
+      if (day !== 0 && day !== 6) {
+        remaining -= 1;
+      }
+    }
+
+    return cursor;
+  }
+
+  function formatLongDate(date) {
+    var weekday = WEEKDAYS[date.getDay()];
+    var dayOfMonth = date.getDate();
+    var month = MONTHS[date.getMonth()];
+    var year = date.getFullYear();
+    return weekday + ', ' + dayOfMonth + ' ' + month + ' ' + year;
+  }
+
+  function formatShortDate(date) {
+    return date.getDate() + ' ' + MONTHS[date.getMonth()] + ' ' + date.getFullYear();
+  }
+
+  RAW.dates = {
+    addWorkingDays: addWorkingDays,
+    formatLongDate: formatLongDate,
+    formatShortDate: formatShortDate
+  };
+})(window.RAW = window.RAW || {});
+
+/* === scripts/data.js === */
+(function (RAW) {
+  'use strict';
+
+  var rowCache = Object.create(null);
+
+  function createRng(seed) {
+    var state = seed >>> 0;
+    return function () {
+      state = (state + 0x6d2b79f5) >>> 0;
+      var t = Math.imul(state ^ (state >>> 15), 1 | state);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function randInt(rng, min, max) {
+    return Math.floor(rng() * (max - min + 1)) + min;
+  }
+
+  function pick(rng, list) {
+    return list[Math.floor(rng() * list.length)];
+  }
+
+  function pad(num, width) {
+    var str = String(num);
+    while (str.length < width) {
+      str = '0' + str;
+    }
+    return str;
+  }
+
+  var CITIES = [
+    { city: 'Quezon City', region: 'NCR', weight: 1.45 },
+    { city: 'Manila', region: 'NCR', weight: 1.25 },
+    { city: 'Caloocan', region: 'NCR', weight: 1.05 },
+    { city: 'Pasig', region: 'NCR', weight: 0.85 },
+    { city: 'Taguig', region: 'NCR', weight: 0.9 },
+    { city: 'Baguio', region: 'CAR', weight: 0.55 },
+    { city: 'San Fernando (La Union)', region: 'Region I', weight: 0.5 },
+    { city: 'Tuguegarao', region: 'Region II', weight: 0.48 },
+    { city: 'San Fernando (Pampanga)', region: 'Region III', weight: 0.82 },
+    { city: 'Angeles', region: 'Region III', weight: 0.72 },
+    { city: 'Antipolo', region: 'Region IV-A', weight: 0.92 },
+    { city: 'Calamba', region: 'Region IV-A', weight: 0.78 },
+    { city: 'Puerto Princesa', region: 'MIMAROPA', weight: 0.46 },
+    { city: 'Legazpi', region: 'Region V', weight: 0.52 },
+    { city: 'Iloilo City', region: 'Region VI', weight: 0.84 },
+    { city: 'Cebu City', region: 'Region VII', weight: 1.15 },
+    { city: 'Tacloban', region: 'Region VIII', weight: 0.54 },
+    { city: 'Zamboanga City', region: 'Region IX', weight: 0.75 },
+    { city: 'Cagayan de Oro', region: 'Region X', weight: 0.88 },
+    { city: 'Davao City', region: 'Region XI', weight: 1.2 }
+  ];
+
+  var REGIONS = [
+    'NCR',
+    'CAR',
+    'Region I',
+    'Region II',
+    'Region III',
+    'Region IV-A',
+    'MIMAROPA',
+    'Region V',
+    'Region VI',
+    'Region VII',
+    'Region VIII',
+    'Region IX',
+    'Region X',
+    'Region XI',
+    'Region XII',
+    'Caraga',
+    'BARMM'
+  ];
+
+  var GENERIC_MEDICINES = [
+    { name: 'Paracetamol', forms: ['Tablet', 'Syrup'], strengths: ['500 mg', '250 mg/5 mL'] },
+    { name: 'Amoxicillin', forms: ['Capsule', 'Suspension'], strengths: ['500 mg', '250 mg/5 mL'] },
+    { name: 'Metformin', forms: ['Tablet'], strengths: ['500 mg', '850 mg'] },
+    { name: 'Amlodipine', forms: ['Tablet'], strengths: ['5 mg', '10 mg'] },
+    { name: 'Losartan', forms: ['Tablet'], strengths: ['50 mg', '100 mg'] },
+    { name: 'Cefalexin', forms: ['Capsule', 'Suspension'], strengths: ['500 mg', '250 mg/5 mL'] },
+    { name: 'Salbutamol', forms: ['Tablet', 'Syrup', 'Nebule'], strengths: ['2 mg', '2 mg/5 mL', '2.5 mg/2.5 mL'] },
+    { name: 'Azithromycin', forms: ['Tablet', 'Suspension'], strengths: ['500 mg', '200 mg/5 mL'] },
+    { name: 'Omeprazole', forms: ['Capsule'], strengths: ['20 mg', '40 mg'] },
+    { name: 'Cetirizine', forms: ['Tablet', 'Syrup'], strengths: ['10 mg', '5 mg/5 mL'] },
+    { name: 'Atorvastatin', forms: ['Tablet'], strengths: ['10 mg', '20 mg', '40 mg'] },
+    { name: 'Co-amoxiclav', forms: ['Tablet', 'Suspension'], strengths: ['625 mg', '457 mg/5 mL'] },
+    { name: 'Mefenamic Acid', forms: ['Capsule', 'Tablet'], strengths: ['500 mg', '250 mg'] },
+    { name: 'Ibuprofen', forms: ['Tablet', 'Suspension'], strengths: ['400 mg', '200 mg/5 mL'] },
+    { name: 'Ascorbic Acid', forms: ['Tablet', 'Syrup'], strengths: ['500 mg', '100 mg/5 mL'] }
+  ];
+
+  var GENERATORS = {
+    'dengue-cases-city': function () {
+      var rng = createRng(104729);
+      var rows = [];
+      var years = [2023, 2024, 2025];
+      var seasonal = [0.65, 0.55, 0.5, 0.55, 0.75, 1.1, 1.45, 1.7, 1.6, 1.35, 1.0, 0.8];
+
+      for (var y = 0; y < years.length; y += 1) {
+        for (var m = 1; m <= 12; m += 1) {
+          for (var c = 0; c < CITIES.length; c += 1) {
+            var item = CITIES[c];
+            var base = 42 * item.weight * seasonal[m - 1];
+            var jitter = 0.75 + rng() * 0.55;
+            rows.push({
+              city: item.city,
+              region: item.region,
+              year: years[y],
+              month: m,
+              cases: Math.max(4, Math.round(base * jitter))
+            });
+          }
+        }
+      }
+      return rows;
+    },
+
+    'health-facilities': function () {
+      var rng = createRng(219403);
+      var rows = [];
+      var prefixes = [
+        'North Valley',
+        'South Harbor',
+        'Central Plains',
+        'East Bay',
+        'Highland',
+        'Riverside',
+        'Sunrise',
+        'Metro District',
+        'Coastal',
+        'Midland',
+        'Greenfield',
+        'Westgate'
+      ];
+      var suffixes = [
+        'General Hospital',
+        'Medical Center',
+        'Community Hospital',
+        'Health Clinic',
+        'Infirmary'
+      ];
+      var types = [
+        { type: 'Hospital', levels: ['Level 1', 'Level 2', 'Level 3'], beds: [35, 320] },
+        { type: 'Infirmary', levels: ['Infirmary'], beds: [10, 24] },
+        { type: 'Primary Care Clinic', levels: ['Primary'], beds: [0, 8] }
+      ];
+
+      for (var i = 0; i < 120; i += 1) {
+        var cityInfo = CITIES[i % CITIES.length];
+        var t = types[i % 5 === 0 ? 1 : (i % 7 === 0 ? 2 : 0)];
+        var name =
+          prefixes[i % prefixes.length] +
+          ' ' +
+          suffixes[Math.floor(i / prefixes.length) % suffixes.length] +
+          ' ' +
+          pad((i % 9) + 1, 2);
+
+        rows.push({
+          facility_name: name,
+          type: t.type,
+          level: pick(rng, t.levels),
+          city: cityInfo.city,
+          region: cityInfo.region,
+          bed_capacity: randInt(rng, t.beds[0], t.beds[1])
+        });
+      }
+      return rows;
+    },
+
+    'registered-drugs': function () {
+      var rng = createRng(330191);
+      var rows = [];
+      var statuses = ['Active', 'Active', 'Active', 'Active', 'For Renewal', 'Suspended'];
+
+      for (var i = 0; i < 150; i += 1) {
+        var med = GENERIC_MEDICINES[i % GENERIC_MEDICINES.length];
+        var form = med.forms[i % med.forms.length];
+        var strength = med.strengths[i % med.strengths.length];
+        rows.push({
+          generic_name: med.name,
+          dosage_form: form,
+          strength: strength,
+          registration_status: pick(rng, statuses)
+        });
+      }
+      return rows;
+    },
+
+    'counterfeit-advisories': function () {
+      var rng = createRng(449817);
+      var rows = [];
+      var anomalies = [
+        'Misspelled batch header and blurred security foil',
+        'Incorrect expiry date font and faded blister ink',
+        'Missing lot code embossing on outer carton',
+        'Off-color label stock and irregular seal perforation',
+        'Inconsistent tablet scoring and unaligned dosage text'
+      ];
+
+      for (var i = 0; i < 45; i += 1) {
+        var med = GENERIC_MEDICINES[(i * 3) % GENERIC_MEDICINES.length];
+        var year = 2024 + (i % 3);
+        var month = pad(((i * 5) % 11) + 1, 2);
+        var day = pad(((i * 7) % 27) + 1, 2);
+        rows.push({
+          advisory_no: 'ADV-SAMPLE-' + year + '-' + pad(i + 1, 3),
+          generic_name: med.name,
+          dosage_form: med.forms[0],
+          date_issued: year + '-' + month + '-' + day,
+          distinguishing_features: anomalies[i % anomalies.length]
+        });
+      }
+      return rows;
+    },
+
+    'medicine-reference-images': function () {
+      var rng = createRng(552811);
+      var rows = [];
+      var views = ['front', 'back', 'blister'];
+      var resolutions = ['1200x900', '1600x1200', '1920x1080'];
+
+      for (var i = 0; i < 90; i += 1) {
+        var med = GENERIC_MEDICINES[Math.floor(i / 3) % GENERIC_MEDICINES.length];
+        var view = views[i % views.length];
+        var slug = med.name.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+        rows.push({
+          image_file: 'sample_' + slug + '_' + view + '_' + pad(i + 1, 3) + '.png',
+          generic_name: med.name,
+          dosage_form: med.forms[i % med.forms.length],
+          view: view,
+          resolution: pick(rng, resolutions)
+        });
+      }
+      return rows;
+    },
+
+    'hospital-beds-region': function () {
+      var rng = createRng(667123);
+      var rows = [];
+      var years = [2022, 2023, 2024, 2025];
+
+      for (var y = 0; y < years.length; y += 1) {
+        for (var r = 0; r < REGIONS.length; r += 1) {
+          var region = REGIONS[r];
+          var scale = region === 'NCR' ? 4.2 : (region === 'Region IV-A' || region === 'Region III' || region === 'Region VII' ? 1.8 : 1.0);
+          var gov = Math.round((2100 + y * 95 + randInt(rng, 0, 260)) * scale);
+          var priv = Math.round((1900 + y * 110 + randInt(rng, 0, 290)) * scale);
+          rows.push({
+            region: region,
+            year: years[y],
+            government_beds: gov,
+            private_beds: priv
+          });
+        }
+      }
+      return rows;
+    }
+  };
+
+  function getRows(datasetId) {
+    var dataset = RAW.getDatasetById(datasetId);
+    if (!dataset || dataset.tier !== 'open') {
+      return null;
+    }
+    if (!rowCache[datasetId]) {
+      var generator = GENERATORS[datasetId];
+      rowCache[datasetId] = generator ? generator() : [];
+    }
+    return rowCache[datasetId];
+  }
+
+  function escapeCsvCell(value) {
+    var str = value === null || value === undefined ? '' : String(value);
+    if (/[",\r\n]/.test(str)) {
+      return '"' + str.replace(/"/g, '""') + '"';
+    }
+    return str;
+  }
+
+  function buildCsv(dataset, rows) {
+    var colNames = dataset.columns.map(function (col) {
+      return col.name;
+    });
+    var lines = [colNames.map(escapeCsvCell).join(',')];
+
+    for (var i = 0; i < rows.length; i += 1) {
+      var row = rows[i];
+      var line = colNames.map(function (colName) {
+        return escapeCsvCell(row[colName]);
+      });
+      lines.push(line.join(','));
+    }
+
+    return lines.join('\r\n') + '\r\n';
+  }
+
+  function downloadSampleCsv(dataset) {
+    var rows = getRows(dataset.id);
+    if (!rows) {
+      return null;
+    }
+    var csvContent = buildCsv(dataset, rows);
+    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    var filename = dataset.id + '_SAMPLE.csv';
+
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    window.setTimeout(function () {
+      URL.revokeObjectURL(url);
+    }, 1000);
+
+    return filename;
+  }
+
+  RAW.data = {
+    getRows: getRows,
+    buildCsv: buildCsv,
+    downloadSampleCsv: downloadSampleCsv
+  };
+})(window.RAW = window.RAW || {});
+
+/* === scripts/app.js === */
+(function (RAW) {
+  'use strict';
+
+  var state = {
+    search: '',
+    tier: 'all',
+    holder: 'all',
+    requestCounter: 42,
+    activeSubmission: null
+  };
+
+  var appEl = null;
+  var srStatusEl = null;
+
+  var ICONS = {
+    search:
+      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+    close:
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
+    arrowLeft:
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>',
+    check:
+      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+    uploadDoc:
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><polyline points="9 15 12 12 15 15"></polyline></svg>',
+    fileCheck:
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><polyline points="9 15 11 17 15 13"></polyline></svg>',
+    imagePlaceholder:
+      '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="8.5" cy="9.5" r="1.5"></circle><polyline points="21 15 16 10 5 20"></polyline></svg>'
+  };
+
+  function isCoarsePointer() {
+    return Boolean(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+  }
+
+  function formatFileSize(bytes) {
+    if (typeof bytes !== 'number' || !isFinite(bytes) || bytes < 0) {
+      return '';
+    }
+    if (bytes < 1024) {
+      return bytes + ' B';
+    }
+    if (bytes < 1048576) {
+      return Math.max(1, Math.round(bytes / 1024)) + ' KB';
+    }
+    return (bytes / 1048576).toFixed(1) + ' MB';
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function announce(message) {
+    if (!srStatusEl) {
+      return;
+    }
+    srStatusEl.textContent = '';
+    window.setTimeout(function () {
+      srStatusEl.textContent = message;
+    }, 20);
+  }
+
+  function renderTierBadge(tier) {
+    if (tier === 'open') {
+      return '<span class="tier-badge tier-badge--open">Open</span>';
+    }
+    return '<span class="tier-badge tier-badge--application">By application</span>';
+  }
+
+  function parseRoute() {
+    var rawHash = window.location.hash || '#/';
+    var path = rawHash.replace(/^#/, '');
+    if (!path || path === '/') {
+      return { view: 'catalog' };
+    }
+    var detailMatch = path.match(/^\/dataset\/([a-z0-9-]+)$/);
+    if (detailMatch) {
+      return { view: 'detail', id: detailMatch[1] };
+    }
+    var requestMatch = path.match(/^\/request\/([a-z0-9-]+)$/);
+    if (requestMatch) {
+      return { view: 'request', id: requestMatch[1] };
+    }
+    return { view: 'catalog' };
+  }
+
+  function navigate(hash) {
+    if (window.location.hash === hash) {
+      render();
+      return;
+    }
+    window.location.hash = hash;
+  }
+
+  function filterDatasets() {
+    var query = state.search.trim().toLowerCase();
+
+    return RAW.DATASETS.filter(function (ds) {
+      if (state.tier !== 'all' && ds.tier !== state.tier) {
+        return false;
+      }
+      if (state.holder !== 'all' && ds.held_by !== state.holder) {
+        return false;
+      }
+      if (!query) {
+        return true;
+      }
+      var haystack = [
+        ds.title,
+        ds.short_description,
+        ds.description,
+        ds.held_by,
+        ds.keywords.join(' ')
+      ]
+        .join(' ')
+        .toLowerCase();
+      return haystack.indexOf(query) !== -1;
+    });
+  }
+
+  function formatCount(count) {
+    return count === 1 ? '1 dataset' : count + ' datasets';
+  }
+
+  function renderCatalogResultsHtml(matches) {
+    if (matches.length === 0) {
+      var trimmed = state.search.trim();
+      if (trimmed) {
+        return (
+          '<div class="empty-state">' +
+          '<p class="empty-state-message">No datasets match &ldquo;' +
+          escapeHtml(trimmed) +
+          '&rdquo;. Try a broader term.</p>' +
+          '<button type="button" class="btn btn-secondary" id="clear-search-btn">Clear search</button>' +
+          '</div>'
+        );
+      }
+      return (
+        '<div class="empty-state">' +
+        '<p class="empty-state-message">No datasets match the selected filters.</p>' +
+        '<button type="button" class="btn btn-secondary" id="reset-filters-btn">Reset filters</button>' +
+        '</div>'
+      );
+    }
+
+    var rowsHtml = matches
+      .map(function (ds) {
+        return (
+          '<tr class="dataset-row" tabindex="0" data-id="' +
+          escapeHtml(ds.id) +
+          '">' +
+          '<td class="col-dataset">' +
+          '<a class="dataset-link" href="#/dataset/' +
+          escapeHtml(ds.id) +
+          '" tabindex="-1">' +
+          escapeHtml(ds.title) +
+          '</a>' +
+          '<p class="dataset-desc">' +
+          escapeHtml(ds.short_description) +
+          '</p>' +
+          '</td>' +
+          '<td class="col-holder cell-meta">' +
+          escapeHtml(ds.held_by) +
+          '</td>' +
+          '<td class="col-updated cell-meta tabular"><time>' +
+          escapeHtml(ds.last_updated) +
+          '</time></td>' +
+          '<td class="col-format cell-meta">' +
+          escapeHtml(ds.format) +
+          '</td>' +
+          '<td class="col-tier">' +
+          renderTierBadge(ds.tier) +
+          '</td>' +
+          '</tr>'
+        );
+      })
+      .join('');
+
+    return (
+      '<div class="table-panel">' +
+      '<table class="catalog-table">' +
+      '<thead>' +
+      '<tr>' +
+      '<th scope="col" class="col-dataset">Dataset</th>' +
+      '<th scope="col" class="col-holder">Held by</th>' +
+      '<th scope="col" class="col-updated">Last updated</th>' +
+      '<th scope="col" class="col-format">Format</th>' +
+      '<th scope="col" class="col-tier">Access tier</th>' +
+      '</tr>' +
+      '</thead>' +
+      '<tbody>' +
+      rowsHtml +
+      '</tbody>' +
+      '</table>' +
+      '</div>'
+    );
+  }
+
+  function bindCatalogRowEvents() {
+    var rows = appEl.querySelectorAll('.dataset-row');
+    for (var i = 0; i < rows.length; i += 1) {
+      (function (row) {
+        var id = row.getAttribute('data-id');
+        row.addEventListener('click', function (e) {
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+            return;
+          }
+          e.preventDefault();
+          navigate('#/dataset/' + id);
+        });
+        row.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            navigate('#/dataset/' + id);
+          }
+        });
+      })(rows[i]);
+    }
+
+    var clearSearchBtn = document.getElementById('clear-search-btn');
+    if (clearSearchBtn) {
+      clearSearchBtn.addEventListener('click', function () {
+        state.search = '';
+        var input = document.getElementById('catalog-search');
+        var searchClearBtn = document.getElementById('search-clear-btn');
+        if (input) {
+          input.value = '';
+          if (!isCoarsePointer()) {
+            input.focus();
+          }
+        }
+        if (searchClearBtn) {
+          searchClearBtn.hidden = true;
+        }
+        updateCatalogResults();
+      });
+    }
+
+    var resetFiltersBtn = document.getElementById('reset-filters-btn');
+    if (resetFiltersBtn) {
+      resetFiltersBtn.addEventListener('click', function () {
+        state.tier = 'all';
+        state.holder = 'all';
+        renderCatalog();
+      });
+    }
+  }
+
+  function updateCatalogResults() {
+    var matches = filterDatasets();
+    var countEl = document.getElementById('catalog-count');
+    var resultsEl = document.getElementById('catalog-results');
+
+    if (countEl) {
+      countEl.textContent = formatCount(matches.length);
+    }
+    if (resultsEl) {
+      resultsEl.innerHTML = renderCatalogResultsHtml(matches);
+      bindCatalogRowEvents();
+    }
+  }
+
+  function renderCatalog() {
+    document.title = 'Research Access Window';
+    var matches = filterDatasets();
+
+    appEl.innerHTML =
+      '<div class="view-shell">' +
+      '<header class="site-header">' +
+      '<div class="site-title-row">' +
+      '<h1>Research Access Window</h1>' +
+      '<span class="site-subtitle">Health data catalog, student concept</span>' +
+      '</div>' +
+      '<p class="site-explanation">' +
+      'Find health data already collected by government agencies. Open datasets download instantly. Sensitive datasets can be requested with a fixed response time.' +
+      '</p>' +
+      '</header>' +
+      '<section class="search-section" aria-label="Search datasets">' +
+      '<label for="catalog-search" class="sr-only">Search datasets</label>' +
+      '<div class="search-box">' +
+      '<span class="search-icon">' +
+      ICONS.search +
+      '</span>' +
+      '<input id="catalog-search" class="search-input" type="search" inputmode="search" enterkeyhint="search" value="' +
+      escapeHtml(state.search) +
+      '" placeholder="Search datasets, e.g. dengue, facilities, medicines" autocomplete="off">' +
+      '<button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="Clear search"' +
+      (state.search ? '' : ' hidden') +
+      '>' +
+      ICONS.close +
+      '</button>' +
+      '</div>' +
+      '</section>' +
+      '<section class="filter-row" aria-label="Dataset filters">' +
+      '<div class="filter-controls">' +
+      '<div class="segmented-control" role="group" aria-label="Filter by access tier">' +
+      '<button type="button" class="seg-btn" data-tier="all" aria-pressed="' +
+      (state.tier === 'all' ? 'true' : 'false') +
+      '">All</button>' +
+      '<button type="button" class="seg-btn" data-tier="open" aria-pressed="' +
+      (state.tier === 'open' ? 'true' : 'false') +
+      '">Open</button>' +
+      '<button type="button" class="seg-btn" data-tier="application" aria-pressed="' +
+      (state.tier === 'application' ? 'true' : 'false') +
+      '">By application</button>' +
+      '</div>' +
+      '<label class="holder-filter" for="holder-filter">' +
+      '<span>Held by</span>' +
+      '<select id="holder-filter" class="select-control">' +
+      '<option value="all"' +
+      (state.holder === 'all' ? ' selected' : '') +
+      '>All</option>' +
+      '<option value="DOH"' +
+      (state.holder === 'DOH' ? ' selected' : '') +
+      '>DOH</option>' +
+      '<option value="PhilHealth"' +
+      (state.holder === 'PhilHealth' ? ' selected' : '') +
+      '>PhilHealth</option>' +
+      '<option value="FDA"' +
+      (state.holder === 'FDA' ? ' selected' : '') +
+      '>FDA</option>' +
+      '</select>' +
+      '</label>' +
+      '</div>' +
+      '<div id="catalog-count" class="result-count tabular" aria-live="polite">' +
+      escapeHtml(formatCount(matches.length)) +
+      '</div>' +
+      '</section>' +
+      '<div class="tier-legend" aria-label="Access tier descriptions">' +
+      '<div class="tier-legend-item">' +
+      renderTierBadge('open') +
+      '<span>Instant preview and CSV download with no request.</span>' +
+      '</div>' +
+      '<div class="tier-legend-item">' +
+      renderTierBadge('application') +
+      '<span>De-identified data requiring ethics clearance and a data sharing agreement.</span>' +
+      '</div>' +
+      '</div>' +
+      '<section id="catalog-results" aria-label="Dataset catalog">' +
+      renderCatalogResultsHtml(matches) +
+      '</section>' +
+      '</div>';
+
+    var searchInput = document.getElementById('catalog-search');
+    var searchClearBtn = document.getElementById('search-clear-btn');
+    if (searchInput) {
+      searchInput.addEventListener('input', function (e) {
+        state.search = e.target.value;
+        if (searchClearBtn) {
+          searchClearBtn.hidden = !state.search;
+        }
+        updateCatalogResults();
+      });
+      searchInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          if (state.search !== '') {
+            state.search = '';
+            searchInput.value = '';
+            if (searchClearBtn) {
+              searchClearBtn.hidden = true;
+            }
+            updateCatalogResults();
+            announce('Search cleared');
+          }
+        }
+      });
+      if (!isCoarsePointer()) {
+        searchInput.focus();
+      }
+    }
+
+    if (searchClearBtn && searchInput) {
+      searchClearBtn.addEventListener('click', function () {
+        state.search = '';
+        searchInput.value = '';
+        searchClearBtn.hidden = true;
+        updateCatalogResults();
+        announce('Search cleared');
+        if (!isCoarsePointer()) {
+          searchInput.focus();
+        }
+      });
+    }
+
+    var tierButtons = appEl.querySelectorAll('.seg-btn[data-tier]');
+    for (var i = 0; i < tierButtons.length; i += 1) {
+      (function (btn) {
+        btn.addEventListener('click', function () {
+          state.tier = btn.getAttribute('data-tier');
+          for (var j = 0; j < tierButtons.length; j += 1) {
+            var isPressed = tierButtons[j] === btn;
+            tierButtons[j].setAttribute('aria-pressed', isPressed ? 'true' : 'false');
+          }
+          updateCatalogResults();
+        });
+      })(tierButtons[i]);
+    }
+
+    var holderSelect = document.getElementById('holder-filter');
+    if (holderSelect) {
+      holderSelect.addEventListener('change', function (e) {
+        state.holder = e.target.value;
+        updateCatalogResults();
+      });
+    }
+
+    bindCatalogRowEvents();
+  }
+
+  function renderColumnsTable(dataset) {
+    var rows = dataset.columns
+      .map(function (col) {
+        return (
+          '<tr>' +
+          '<td class="col-name-cell">' +
+          escapeHtml(col.name) +
+          '</td>' +
+          '<td>' +
+          escapeHtml(col.type) +
+          '</td>' +
+          '<td>' +
+          escapeHtml(col.description) +
+          '</td>' +
+          '</tr>'
+        );
+      })
+      .join('');
+
+    return (
+      '<section class="detail-section">' +
+      '<h2>Columns</h2>' +
+      '<div class="table-scroll">' +
+      '<table class="data-table">' +
+      '<thead>' +
+      '<tr>' +
+      '<th scope="col">Column name</th>' +
+      '<th scope="col">Type</th>' +
+      '<th scope="col">Description</th>' +
+      '</tr>' +
+      '</thead>' +
+      '<tbody>' +
+      rows +
+      '</tbody>' +
+      '</table>' +
+      '</div>' +
+      '</section>'
+    );
+  }
+
+  function renderPlaceholderImagesSection() {
+    var views = ['Front packaging', 'Back label', 'Blister strip', 'Lot and expiry panel'];
+    var tiles = views
+      .map(function (viewLabel) {
+        return (
+          '<div class="placeholder-tile">' +
+          ICONS.imagePlaceholder +
+          '<span class="placeholder-tile-title">Sample image</span>' +
+          '<span class="placeholder-tile-caption">' +
+          escapeHtml(viewLabel) +
+          '</span>' +
+          '</div>'
+        );
+      })
+      .join('');
+
+    return (
+      '<section class="detail-section">' +
+      '<h2>Sample packaging views</h2>' +
+      '<p class="about-text">Neutral placeholder tiles representing verified packaging angles. No real product photographs or brand names are displayed.</p>' +
+      '<div class="placeholder-strip">' +
+      tiles +
+      '</div>' +
+      '</section>'
+    );
+  }
+
+  function renderPreviewSection(dataset, rows) {
+    var previewRows = rows.slice(0, 10);
+    var headerCells = dataset.columns
+      .map(function (col) {
+        return (
+          '<th scope="col" class="' +
+          (col.numeric ? 'is-numeric' : '') +
+          '">' +
+          escapeHtml(col.name) +
+          '</th>'
+        );
+      })
+      .join('');
+
+    var bodyRows = previewRows
+      .map(function (row) {
+        var cells = dataset.columns
+          .map(function (col) {
+            return (
+              '<td class="' +
+              (col.numeric ? 'is-numeric' : '') +
+              '">' +
+              escapeHtml(row[col.name]) +
+              '</td>'
+            );
+          })
+          .join('');
+        return '<tr>' + cells + '</tr>';
+      })
+      .join('');
+
+    return (
+      '<section class="detail-section">' +
+      '<div class="preview-header">' +
+      '<h2>Preview</h2>' +
+      '<span class="preview-label">Preview: first 10 of ' +
+      escapeHtml(rows.length) +
+      ' rows, sample data</span>' +
+      '</div>' +
+      '<div class="table-scroll">' +
+      '<table class="data-table">' +
+      '<thead><tr>' +
+      headerCells +
+      '</tr></thead>' +
+      '<tbody>' +
+      bodyRows +
+      '</tbody>' +
+      '</table>' +
+      '</div>' +
+      '</section>'
+    );
+  }
+
+  function renderApplicationSection(dataset) {
+    return (
+      '<section class="application-panel">' +
+      '<h2>Why this dataset needs an application</h2>' +
+      '<p class="application-explanation">' +
+      'Records are de-identified, but combinations of age, geography, diagnoses, or clinical measurements can still re-identify individuals if combined with external data. Access therefore requires an approved research purpose, ethics clearance, and a signed data sharing agreement.' +
+      '</p>' +
+      '<div class="commitment-box">Decision within 10 working days of a complete application.</div>' +
+      '<p class="requirements-title">Requirements for access:</p>' +
+      '<ul class="checklist">' +
+      '<li class="checklist-item"><span class="checklist-icon">' +
+      ICONS.check +
+      '</span><span>Clear research purpose limited to the columns needed</span></li>' +
+      '<li class="checklist-item"><span class="checklist-icon">' +
+      ICONS.check +
+      '</span><span>Ethics clearance from a research ethics board</span></li>' +
+      '<li class="checklist-item"><span class="checklist-icon">' +
+      ICONS.check +
+      '</span><span>Signed data sharing agreement under the Data Privacy Act</span></li>' +
+      '</ul>' +
+      '<a class="btn btn-primary" href="#/request/' +
+      escapeHtml(dataset.id) +
+      '" id="request-access-btn">Request access</a>' +
+      '</section>'
+    );
+  }
+
+  function copyText(text, onSuccess) {
+    if (window.location.protocol !== 'file:' && navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(onSuccess, function () {
+        fallbackCopy(text, onSuccess);
+      });
+      return;
+    }
+    if (fallbackCopy(text, onSuccess)) {
+      return;
+    }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(onSuccess, function () {});
+    }
+  }
+
+  function fallbackCopy(text, onSuccess) {
+    var textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.select();
+    textarea.setSelectionRange(0, text.length);
+    var copied = false;
+    try {
+      copied = document.execCommand('copy');
+      if (copied) {
+        onSuccess();
+      }
+    } catch (_err) {
+      copied = false;
+    }
+    document.body.removeChild(textarea);
+    return copied;
+  }
+
+  function renderDetail(id) {
+    var dataset = RAW.getDatasetById(id);
+    if (!dataset) {
+      document.title = 'Dataset not found - Research Access Window';
+      appEl.innerHTML =
+        '<div class="view-shell">' +
+        '<a class="back-link" href="#/">' +
+        ICONS.arrowLeft +
+        '<span>All datasets</span></a>' +
+        '<div class="empty-state">' +
+        '<h1 class="empty-state-message">Dataset not found</h1>' +
+        '<a class="btn btn-primary" href="#/">Back to catalog</a>' +
+        '</div>' +
+        '</div>';
+      return;
+    }
+
+    document.title = dataset.title + ' - Research Access Window';
+    var openRows = dataset.tier === 'open' ? RAW.data.getRows(dataset.id) : null;
+
+    var tierSpecificTop = '';
+    var tierSpecificPreview = '';
+    if (dataset.tier === 'open') {
+      tierSpecificTop =
+        '<div class="open-action-bar">' +
+        '<button type="button" class="btn btn-primary" id="download-csv-btn">Download CSV</button>' +
+        '<span class="license-text">Open data. Free to use with citation.</span>' +
+        '</div>';
+      if (dataset.hasPlaceholderImages) {
+        tierSpecificPreview += renderPlaceholderImagesSection();
+      }
+      tierSpecificPreview += renderPreviewSection(dataset, openRows);
+    } else {
+      tierSpecificTop = renderApplicationSection(dataset);
+    }
+
+    appEl.innerHTML =
+      '<div class="view-shell">' +
+      '<a class="back-link" href="#/">' +
+      ICONS.arrowLeft +
+      '<span>All datasets</span></a>' +
+      '<header class="detail-header">' +
+      '<div class="detail-title-row">' +
+      '<h1>' +
+      escapeHtml(dataset.title) +
+      '</h1>' +
+      renderTierBadge(dataset.tier) +
+      '</div>' +
+      '<dl class="meta-grid">' +
+      '<div class="meta-item"><dt>Held by</dt><dd>' +
+      escapeHtml(dataset.held_by) +
+      '</dd></div>' +
+      '<div class="meta-item"><dt>Last updated</dt><dd class="tabular"><time>' +
+      escapeHtml(dataset.last_updated) +
+      '</time></dd></div>' +
+      '<div class="meta-item"><dt>Update frequency</dt><dd>' +
+      escapeHtml(dataset.update_frequency) +
+      '</dd></div>' +
+      '<div class="meta-item"><dt>Format</dt><dd>' +
+      escapeHtml(dataset.format) +
+      '</dd></div>' +
+      '<div class="meta-item"><dt>Coverage</dt><dd>' +
+      escapeHtml(dataset.coverage) +
+      '</dd></div>' +
+      '</dl>' +
+      '</header>' +
+      '<section class="detail-section">' +
+      '<h2>About this data</h2>' +
+      '<p class="about-text">' +
+      escapeHtml(dataset.description) +
+      '</p>' +
+      '</section>' +
+      tierSpecificTop +
+      tierSpecificPreview +
+      renderColumnsTable(dataset) +
+      '<section class="detail-section">' +
+      '<h2>How to cite</h2>' +
+      '<div class="cite-row">' +
+      '<span class="cite-text" id="citation-text">' +
+      escapeHtml(dataset.citation) +
+      '</span>' +
+      '<button type="button" class="btn btn-secondary btn-small" id="copy-citation-btn">Copy</button>' +
+      '</div>' +
+      '</section>' +
+      '</div>';
+
+    var downloadBtn = document.getElementById('download-csv-btn');
+    if (downloadBtn) {
+      downloadBtn.addEventListener('click', function () {
+        var filename = RAW.data.downloadSampleCsv(dataset);
+        if (filename) {
+          announce('Downloaded ' + filename);
+        }
+      });
+    }
+
+    var copyBtn = document.getElementById('copy-citation-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function () {
+        copyText(dataset.citation, function () {
+          copyBtn.textContent = 'Copied';
+          announce('Citation copied');
+          window.setTimeout(function () {
+            copyBtn.textContent = 'Copy';
+          }, 1500);
+        });
+      });
+    }
+  }
+
+  function renderConfirmationPanel(dataset, submission) {
+    return (
+      '<div class="view-shell form-container">' +
+      '<a class="back-link" href="#/dataset/' +
+      escapeHtml(dataset.id) +
+      '">' +
+      ICONS.arrowLeft +
+      '<span>Back to dataset</span></a>' +
+      '<header class="request-header">' +
+      '<h1>Access request submitted</h1>' +
+      '<p class="request-dataset-meta">' +
+      escapeHtml(dataset.title) +
+      ' (' +
+      escapeHtml(dataset.held_by) +
+      ')</p>' +
+      '</header>' +
+      '<section class="confirmation-panel" aria-labelledby="confirmation-ref">' +
+      '<div class="confirmation-ref-label">Reference number</div>' +
+      '<div id="confirmation-ref" class="confirmation-ref">' +
+      escapeHtml(submission.refNumber) +
+      '</div>' +
+      '<div class="confirmation-decision">Decision expected by ' +
+      escapeHtml(submission.expectedLong) +
+      '</div>' +
+      '<ol class="status-tracker" aria-label="Application status">' +
+      '<li class="tracker-step tracker-step--done">' +
+      '<div class="tracker-step-title">Submitted</div>' +
+      '<div class="tracker-step-meta tabular">' +
+      escapeHtml(submission.submittedShort) +
+      '</div>' +
+      '</li>' +
+      '<li class="tracker-step tracker-step--current">' +
+      '<div class="tracker-step-title">Under review</div>' +
+      '<div class="tracker-step-meta">In progress</div>' +
+      '</li>' +
+      '<li class="tracker-step">' +
+      '<div class="tracker-step-title">Decision</div>' +
+      '<div class="tracker-step-meta tabular">Expected ' +
+      escapeHtml(submission.expectedShort) +
+      '</div>' +
+      '</li>' +
+      '</ol>' +
+      '<p class="confirmation-note">You will be notified by email. This is a prototype, so no email is sent.</p>' +
+      '<div class="confirmation-actions">' +
+      '<a class="btn btn-primary" href="#/">Back to catalog</a>' +
+      '<a class="btn btn-secondary" href="#/dataset/' +
+      escapeHtml(dataset.id) +
+      '">View dataset</a>' +
+      '</div>' +
+      '</section>' +
+      '</div>'
+    );
+  }
+
+  function renderRequest(id) {
+    var dataset = RAW.getDatasetById(id);
+    if (!dataset) {
+      renderDetail(id);
+      return;
+    }
+
+    if (dataset.tier !== 'application') {
+      document.title = 'Open dataset - Research Access Window';
+      appEl.innerHTML =
+        '<div class="view-shell form-container">' +
+        '<a class="back-link" href="#/dataset/' +
+        escapeHtml(dataset.id) +
+        '">' +
+        ICONS.arrowLeft +
+        '<span>Back to dataset</span></a>' +
+        '<div class="empty-state">' +
+        '<h1 class="empty-state-message">No application is needed for this open dataset.</h1>' +
+        '<a class="btn btn-primary" href="#/dataset/' +
+        escapeHtml(dataset.id) +
+        '">View and download dataset</a>' +
+        '</div>' +
+        '</div>';
+      return;
+    }
+
+    if (state.activeSubmission && state.activeSubmission.datasetId === dataset.id) {
+      document.title = 'Request submitted - Research Access Window';
+      appEl.innerHTML = renderConfirmationPanel(dataset, state.activeSubmission);
+      return;
+    }
+
+    document.title = 'Request access - ' + dataset.title + ' - Research Access Window';
+
+    var columnCheckboxes = dataset.columns
+      .map(function (col) {
+        var cbId = 'col-' + col.name;
+        return (
+          '<label class="checkbox-label" for="' +
+          escapeHtml(cbId) +
+          '">' +
+          '<input type="checkbox" id="' +
+          escapeHtml(cbId) +
+          '" name="columns" value="' +
+          escapeHtml(col.name) +
+          '">' +
+          '<span>' +
+          escapeHtml(col.name) +
+          '</span>' +
+          '</label>'
+        );
+      })
+      .join('');
+
+    appEl.innerHTML =
+      '<div class="view-shell form-container">' +
+      '<a class="back-link" href="#/dataset/' +
+      escapeHtml(dataset.id) +
+      '">' +
+      ICONS.arrowLeft +
+      '<span>Back to dataset</span></a>' +
+      '<header class="request-header">' +
+      '<h1>Request access</h1>' +
+      '<p class="request-dataset-meta">' +
+      escapeHtml(dataset.title) +
+      ' (' +
+      escapeHtml(dataset.held_by) +
+      ') &middot; Decision within 10 working days</p>' +
+      '</header>' +
+      '<form id="request-form" class="request-panel" novalidate>' +
+      '<div class="field-group">' +
+      '<label class="field-label" for="req-name">Full name</label>' +
+      '<input class="field-input" type="text" id="req-name" name="fullName" autocomplete="name" aria-describedby="err-name">' +
+      '<div id="err-name" class="field-error" hidden></div>' +
+      '</div>' +
+      '<div class="field-group">' +
+      '<label class="field-label" for="req-institution">Institution</label>' +
+      '<input class="field-input" type="text" id="req-institution" name="institution" autocomplete="organization" aria-describedby="err-institution">' +
+      '<div id="err-institution" class="field-error" hidden></div>' +
+      '</div>' +
+      '<div class="field-group">' +
+      '<label class="field-label" for="req-role">Role</label>' +
+      '<select class="field-select" id="req-role" name="role" aria-describedby="err-role">' +
+      '<option value="">Select a role</option>' +
+      '<option value="Undergraduate student">Undergraduate student</option>' +
+      '<option value="Graduate student">Graduate student</option>' +
+      '<option value="Faculty or researcher">Faculty or researcher</option>' +
+      '<option value="Independent researcher">Independent researcher</option>' +
+      '</select>' +
+      '<div id="err-role" class="field-error" hidden></div>' +
+      '</div>' +
+      '<div class="field-group">' +
+      '<label class="field-label" for="req-purpose">Research purpose</label>' +
+      '<p class="field-helper" id="helper-purpose">Describe your study objective and how you will use these records (50 to 600 characters).</p>' +
+      '<textarea class="field-textarea" id="req-purpose" name="purpose" maxlength="600" aria-describedby="helper-purpose err-purpose"></textarea>' +
+      '<div id="purpose-count" class="char-counter tabular">0 / 600 characters (minimum 50)</div>' +
+      '<div id="err-purpose" class="field-error" hidden></div>' +
+      '</div>' +
+      '<div class="field-group">' +
+      '<fieldset id="req-columns-fieldset" class="columns-fieldset" aria-describedby="helper-columns err-columns">' +
+      '<legend>Columns needed</legend>' +
+      '<p class="field-helper" id="helper-columns">Request only what your study needs.</p>' +
+      '<div class="checkbox-grid">' +
+      columnCheckboxes +
+      '</div>' +
+      '</fieldset>' +
+      '<div id="err-columns" class="field-error" hidden></div>' +
+      '</div>' +
+      '<div class="field-group">' +
+      '<label class="field-label" for="req-ethics">Ethics clearance</label>' +
+      '<p class="field-helper" id="helper-ethics">Approval letter from your research ethics board (PDF).</p>' +
+      '<div class="file-dropzone" id="ethics-picker-wrap">' +
+      '<input class="sr-only" type="file" id="req-ethics" name="ethics" accept=".pdf,application/pdf" aria-describedby="helper-ethics err-ethics">' +
+      '<div class="file-dropzone-empty" id="ethics-empty">' +
+      '<div class="file-icon-tile">' +
+      ICONS.uploadDoc +
+      '</div>' +
+      '<div class="file-dropzone-copy">' +
+      '<div class="file-dropzone-title">Upload ethics clearance letter</div>' +
+      '<div class="file-dropzone-sub">PDF document from your research ethics board</div>' +
+      '</div>' +
+      '<button type="button" class="btn btn-secondary btn-small" id="ethics-choose-btn">Choose PDF</button>' +
+      '</div>' +
+      '<div class="file-dropzone-attached" id="ethics-attached" hidden>' +
+      '<div class="file-icon-tile file-icon-tile--attached">' +
+      ICONS.fileCheck +
+      '</div>' +
+      '<div class="file-dropzone-copy">' +
+      '<div class="file-dropzone-filename" id="ethics-filename"></div>' +
+      '<div class="file-dropzone-sub file-dropzone-sub--attached" id="ethics-meta"></div>' +
+      '</div>' +
+      '<div class="file-dropzone-actions">' +
+      '<button type="button" class="btn btn-secondary btn-small" id="ethics-change-btn">Change</button>' +
+      '<button type="button" class="btn-text-link" id="ethics-remove-btn">Remove</button>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div id="err-ethics" class="field-error" hidden></div>' +
+      '</div>' +
+      '<div class="field-group">' +
+      '<div class="agreement-box" id="agreement-box">' +
+      '<label class="checkbox-label" for="req-agreement">' +
+      '<input type="checkbox" id="req-agreement" name="agreement" aria-describedby="err-agreement">' +
+      '<span class="agreement-text">I agree to the data sharing agreement, including no attempts to re-identify individuals and deletion of the data after the study.</span>' +
+      '</label>' +
+      '</div>' +
+      '<div id="err-agreement" class="field-error" hidden></div>' +
+      '</div>' +
+      '<div class="form-actions">' +
+      '<div class="form-actions-main">' +
+      '<button type="submit" class="btn btn-primary" id="submit-request-btn">Submit request</button>' +
+      '<a class="btn btn-secondary" href="#/dataset/' +
+      escapeHtml(dataset.id) +
+      '">Cancel</a>' +
+      '</div>' +
+      '<button type="button" class="btn-text-link" id="fill-sample-btn">Fill sample request</button>' +
+      '</div>' +
+      '</form>' +
+      '</div>';
+
+    setupRequestForm(dataset);
+  }
+
+  function setupRequestForm(dataset) {
+    var form = document.getElementById('request-form');
+    var nameInput = document.getElementById('req-name');
+    var instInput = document.getElementById('req-institution');
+    var roleSelect = document.getElementById('req-role');
+    var purposeInput = document.getElementById('req-purpose');
+    var purposeCountEl = document.getElementById('purpose-count');
+    var columnsFieldset = document.getElementById('req-columns-fieldset');
+    var ethicsInput = document.getElementById('req-ethics');
+    var ethicsWrap = document.getElementById('ethics-picker-wrap');
+    var ethicsEmptyEl = document.getElementById('ethics-empty');
+    var ethicsAttachedEl = document.getElementById('ethics-attached');
+    var ethicsNameEl = document.getElementById('ethics-filename');
+    var ethicsMetaEl = document.getElementById('ethics-meta');
+    var ethicsChangeBtn = document.getElementById('ethics-change-btn');
+    var ethicsRemoveBtn = document.getElementById('ethics-remove-btn');
+    var agreementBox = document.getElementById('agreement-box');
+    var agreementInput = document.getElementById('req-agreement');
+    var fillSampleBtn = document.getElementById('fill-sample-btn');
+
+    var ethicsFileName = '';
+    var ethicsFileMeta = '';
+    var hadError = Object.create(null);
+
+    function renderEthicsPickerState() {
+      if (ethicsFileName) {
+        ethicsEmptyEl.hidden = true;
+        ethicsAttachedEl.hidden = false;
+        ethicsWrap.classList.add('is-attached');
+        ethicsNameEl.textContent = ethicsFileName;
+        ethicsMetaEl.textContent = ethicsFileMeta || 'PDF attached';
+      } else {
+        ethicsEmptyEl.hidden = false;
+        ethicsAttachedEl.hidden = true;
+        ethicsWrap.classList.remove('is-attached');
+        ethicsNameEl.textContent = '';
+        ethicsMetaEl.textContent = '';
+      }
+    }
+
+    function updatePurposeCount() {
+      var len = purposeInput.value.length;
+      purposeCountEl.textContent = len + ' / 600 characters (minimum 50)';
+    }
+
+    function setError(key, control, errId, message, container) {
+      var errEl = document.getElementById(errId);
+      if (message) {
+        hadError[key] = true;
+        errEl.textContent = message;
+        errEl.hidden = false;
+        control.setAttribute('aria-invalid', 'true');
+        if (container) {
+          container.setAttribute('data-invalid', 'true');
+        }
+      } else {
+        errEl.textContent = '';
+        errEl.hidden = true;
+        control.removeAttribute('aria-invalid');
+        if (container) {
+          container.removeAttribute('data-invalid');
+        }
+      }
+    }
+
+    function getCheckedColumns() {
+      var boxes = form.querySelectorAll('input[name="columns"]:checked');
+      var list = [];
+      for (var i = 0; i < boxes.length; i += 1) {
+        list.push(boxes[i].value);
+      }
+      return list;
+    }
+
+    function validateName() {
+      var msg = nameInput.value.trim() ? '' : 'Enter your full name.';
+      setError('name', nameInput, 'err-name', msg);
+      return !msg;
+    }
+
+    function validateInstitution() {
+      var msg = instInput.value.trim() ? '' : 'Enter your institution or affiliation.';
+      setError('institution', instInput, 'err-institution', msg);
+      return !msg;
+    }
+
+    function validateRole() {
+      var msg = roleSelect.value ? '' : 'Select your role.';
+      setError('role', roleSelect, 'err-role', msg);
+      return !msg;
+    }
+
+    function validatePurpose() {
+      var len = purposeInput.value.trim().length;
+      var msg = '';
+      if (len < 50) {
+        msg = 'Enter at least 50 characters describing your research purpose.';
+      } else if (len > 600) {
+        msg = 'Keep your research purpose within 600 characters.';
+      }
+      setError('purpose', purposeInput, 'err-purpose', msg);
+      return !msg;
+    }
+
+    function validateColumns() {
+      var checked = getCheckedColumns();
+      var msg = checked.length > 0 ? '' : 'Select at least one column needed for your study.';
+      setError('columns', columnsFieldset, 'err-columns', msg);
+      return !msg;
+    }
+
+    function validateEthics() {
+      var msg = '';
+      if (!ethicsFileName) {
+        msg = 'Attach your ethics clearance PDF file.';
+      } else if (!/\.pdf$/i.test(ethicsFileName)) {
+        msg = 'Ethics clearance must be a PDF file (.pdf).';
+      }
+      setError('ethics', ethicsInput, 'err-ethics', msg, ethicsWrap);
+      return !msg;
+    }
+
+    function validateAgreement() {
+      var msg = agreementInput.checked
+        ? ''
+        : 'Confirm that you agree to the data sharing agreement.';
+      setError('agreement', agreementInput, 'err-agreement', msg, agreementBox);
+      return !msg;
+    }
+
+    nameInput.addEventListener('blur', validateName);
+    nameInput.addEventListener('input', function () {
+      if (hadError.name) {
+        validateName();
+      }
+    });
+
+    instInput.addEventListener('blur', validateInstitution);
+    instInput.addEventListener('input', function () {
+      if (hadError.institution) {
+        validateInstitution();
+      }
+    });
+
+    roleSelect.addEventListener('blur', validateRole);
+    roleSelect.addEventListener('change', function () {
+      if (hadError.role) {
+        validateRole();
+      }
+    });
+
+    purposeInput.addEventListener('blur', validatePurpose);
+    purposeInput.addEventListener('input', function () {
+      updatePurposeCount();
+      if (hadError.purpose) {
+        validatePurpose();
+      }
+    });
+
+    var columnInputs = form.querySelectorAll('input[name="columns"]');
+    for (var i = 0; i < columnInputs.length; i += 1) {
+      columnInputs[i].addEventListener('change', function () {
+        if (hadError.columns) {
+          validateColumns();
+        }
+      });
+    }
+    columnsFieldset.addEventListener('focusout', function (e) {
+      if (!columnsFieldset.contains(e.relatedTarget) && e.relatedTarget !== fillSampleBtn) {
+        validateColumns();
+      }
+    });
+
+    ethicsEmptyEl.addEventListener('click', function () {
+      ethicsInput.click();
+    });
+
+    ethicsChangeBtn.addEventListener('click', function () {
+      ethicsInput.click();
+    });
+
+    ethicsRemoveBtn.addEventListener('click', function () {
+      ethicsFileName = '';
+      ethicsFileMeta = '';
+      ethicsInput.value = '';
+      renderEthicsPickerState();
+      validateEthics();
+      announce('Ethics clearance file removed');
+      ethicsInput.focus();
+    });
+
+    ethicsWrap.addEventListener('dragenter', function (e) {
+      e.preventDefault();
+      ethicsWrap.classList.add('is-dragover');
+    });
+
+    ethicsWrap.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      ethicsWrap.classList.add('is-dragover');
+    });
+
+    ethicsWrap.addEventListener('dragleave', function (e) {
+      if (!ethicsWrap.contains(e.relatedTarget)) {
+        ethicsWrap.classList.remove('is-dragover');
+      }
+    });
+
+    ethicsWrap.addEventListener('drop', function (e) {
+      e.preventDefault();
+      ethicsWrap.classList.remove('is-dragover');
+      var files = e.dataTransfer && e.dataTransfer.files;
+      if (files && files.length > 0) {
+        var dropped = files[0];
+        var sizeStr = formatFileSize(dropped.size);
+        ethicsFileName = dropped.name;
+        ethicsFileMeta = sizeStr ? sizeStr + ' · PDF attached' : 'PDF attached';
+        renderEthicsPickerState();
+        validateEthics();
+      }
+    });
+
+    ethicsInput.addEventListener('change', function () {
+      if (ethicsInput.files && ethicsInput.files.length > 0) {
+        var picked = ethicsInput.files[0];
+        var sizeStr = formatFileSize(picked.size);
+        ethicsFileName = picked.name;
+        ethicsFileMeta = sizeStr ? sizeStr + ' · PDF attached' : 'PDF attached';
+      } else {
+        ethicsFileName = '';
+        ethicsFileMeta = '';
+      }
+      renderEthicsPickerState();
+      validateEthics();
+    });
+
+    agreementInput.addEventListener('change', validateAgreement);
+
+    fillSampleBtn.addEventListener('click', function () {
+      nameInput.value = 'Juan Dela Cruz';
+      instInput.value = 'University of the Philippines Diliman';
+      roleSelect.value = 'Undergraduate student';
+      purposeInput.value =
+        'To validate a pediatric congenital heart defect risk scoring model using anonymized defect diameter, hemodynamic ratio, and follow-up duration measurements for an undergraduate research study.';
+      updatePurposeCount();
+
+      var preferred = ['age_months', 'defect_type', 'defect_diameter_mm'];
+      var allBoxes = form.querySelectorAll('input[name="columns"]');
+      var matchedAny = false;
+      for (var k = 0; k < allBoxes.length; k += 1) {
+        var check = preferred.indexOf(allBoxes[k].value) !== -1;
+        allBoxes[k].checked = check;
+        if (check) {
+          matchedAny = true;
+        }
+      }
+      if (!matchedAny) {
+        for (var m = 0; m < allBoxes.length && m < 3; m += 1) {
+          allBoxes[m].checked = true;
+        }
+      }
+
+      ethicsFileName = 'ethics_approval_sample.pdf';
+      ethicsFileMeta = 'Sample PDF · Ready for submission';
+      renderEthicsPickerState();
+      agreementInput.checked = true;
+
+      validateName();
+      validateInstitution();
+      validateRole();
+      validatePurpose();
+      validateColumns();
+      validateEthics();
+      validateAgreement();
+
+      announce('Sample request filled');
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var checks = [
+        { ok: validateName(), target: nameInput },
+        { ok: validateInstitution(), target: instInput },
+        { ok: validateRole(), target: roleSelect },
+        { ok: validatePurpose(), target: purposeInput },
+        { ok: validateColumns(), target: form.querySelector('input[name="columns"]') },
+        { ok: validateEthics(), target: ethicsInput },
+        { ok: validateAgreement(), target: agreementInput }
+      ];
+
+      var firstInvalid = null;
+      var errorCount = 0;
+      for (var c = 0; c < checks.length; c += 1) {
+        if (!checks[c].ok) {
+          errorCount += 1;
+          if (!firstInvalid) {
+            firstInvalid = checks[c].target;
+          }
+        }
+      }
+
+      if (firstInvalid) {
+        announce(
+          'Please fix ' +
+            errorCount +
+            (errorCount === 1 ? ' error' : ' errors') +
+            ' in the request form.'
+        );
+        firstInvalid.focus();
+        return;
+      }
+
+      var submittedDate = new Date();
+      var expectedDate = RAW.dates.addWorkingDays(submittedDate, 10);
+      var refNum =
+        'RAW-' +
+        submittedDate.getFullYear() +
+        '-' +
+        String(state.requestCounter).padStart(5, '0');
+      state.requestCounter += 1;
+
+      state.activeSubmission = {
+        datasetId: dataset.id,
+        refNumber: refNum,
+        submittedShort: RAW.dates.formatShortDate(submittedDate),
+        expectedShort: RAW.dates.formatShortDate(expectedDate),
+        expectedLong: RAW.dates.formatLongDate(expectedDate)
+      };
+
+      document.title = 'Request submitted - Research Access Window';
+      appEl.innerHTML = renderConfirmationPanel(dataset, state.activeSubmission);
+      window.scrollTo(0, 0);
+      var refHeading = document.getElementById('confirmation-ref');
+      if (refHeading) {
+        announce('Request submitted. Reference ' + refNum + '. Decision expected by ' + state.activeSubmission.expectedLong);
+      }
+    });
+  }
+
+  function render() {
+    var route = parseRoute();
+    window.scrollTo(0, 0);
+
+    if (route.view === 'catalog') {
+      renderCatalog();
+    } else if (route.view === 'detail') {
+      renderDetail(route.id);
+    } else if (route.view === 'request') {
+      renderRequest(route.id);
+    }
+  }
+
+  function resetPrototype() {
+    state.search = '';
+    state.tier = 'all';
+    state.holder = 'all';
+    state.requestCounter = 42;
+    state.activeSubmission = null;
+
+    if (window.getSelection) {
+      var sel = window.getSelection();
+      if (sel && sel.removeAllRanges) {
+        sel.removeAllRanges();
+      }
+    }
+
+    if (window.location.hash !== '#/' && window.location.hash !== '') {
+      window.location.hash = '#/';
+    } else {
+      render();
+    }
+    announce('Prototype reset');
+  }
+
+  function handleGlobalKeydown(e) {
+    if (!e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) {
+      return;
+    }
+    if (e.key !== 'R' && e.key !== 'r') {
+      return;
+    }
+
+    var active = document.activeElement;
+    if (active && active.closest && active.closest('#request-form')) {
+      var tag = active.tagName;
+      if (tag === 'TEXTAREA' || (tag === 'INPUT' && active.type === 'text')) {
+        return;
+      }
+    }
+
+    e.preventDefault();
+    resetPrototype();
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    appEl = document.getElementById('app');
+    srStatusEl = document.getElementById('sr-status');
+
+    window.addEventListener('hashchange', render);
+    document.addEventListener('keydown', handleGlobalKeydown);
+
+    var conceptBar = document.querySelector('.concept-bar');
+    if (conceptBar) {
+      var lastTapAt = 0;
+      var lastResetAt = 0;
+
+      conceptBar.addEventListener('touchend', function (e) {
+        var now = Date.now();
+        if (now - lastTapAt <= 400) {
+          e.preventDefault();
+          lastTapAt = 0;
+          lastResetAt = now;
+          resetPrototype();
+        } else {
+          lastTapAt = now;
+        }
+      });
+
+      conceptBar.addEventListener('dblclick', function () {
+        if (Date.now() - lastResetAt < 600) {
+          return;
+        }
+        resetPrototype();
+      });
+    }
+
+    render();
+  });
+})(window.RAW = window.RAW || {});
+  </script>
 </body>
 </html>

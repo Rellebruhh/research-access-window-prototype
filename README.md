@@ -6,9 +6,9 @@ An offline web prototype created for a 7-minute persuasive speech in Speech 30 (
 
 ## How to open
 
-1. Download or clone this repository.
-2. Double-click `index.html` to open it directly in Google Chrome or Microsoft Edge.
-3. No build step, local server, or internet connection is required.
+1. Download or clone this repository (or copy `index.html` by itself to your Android tablet or laptop).
+2. Tap or double-click `index.html` to open it directly in Google Chrome or Microsoft Edge.
+3. `index.html` is fully self-contained (all styles, sample data, and scripts are inlined), so it works offline even when Android file managers open it via a `content://` URI. No build step, local server, or internet connection is required.
 
 ## 60-second demo click path
 
